@@ -26,7 +26,7 @@
     <enum>QAbstractScrollArea::AdjustToContents</enum>
    </property>
    <property name="rowCount">
-    <number>15</number>
+    <number>0</number>
    </property>
    <property name="columnCount">
     <number>9</number>
@@ -37,21 +37,6 @@
    <attribute name="verticalHeaderVisible">
     <bool>false</bool>
    </attribute>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
-   <row/>
    <column/>
    <column/>
    <column/>
