@@ -27,15 +27,17 @@ class gui(QDialog):
         processesTuple = proc.collectProcesses()
         #time.sleep(10)      
         row = 0
+        #self.tableWidget.insertRow(0)
+        #self.tableWidget.insertRow(0)
         for process in processesTuple:
             for col in range(0,self.tableWidget.columnCount()):
-                self.tableWidget.insertRow(self.tableWidget.rowCount())
                 self.tableWidget.setItem(row,col,QTableWidgetItem(str(process[col])))
+                self.tableWidget.insertRow(self.tableWidget.rowCount())
             row = row + 1
              
 app = QApplication(sys.argv)
 widget = gui()
 widget.updateGui()
 widget.show()
-widget.updateGui()
+#widget.updateGui()
 sys.exit(app.exec_())

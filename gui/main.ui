@@ -23,10 +23,16 @@
     </rect>
    </property>
    <property name="sizeAdjustPolicy">
-    <enum>QAbstractScrollArea::AdjustToContents</enum>
+    <enum>QAbstractScrollArea::AdjustIgnored</enum>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="gridStyle">
+    <enum>Qt::DotLine</enum>
    </property>
    <property name="rowCount">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="columnCount">
     <number>9</number>
@@ -37,6 +43,7 @@
    <attribute name="verticalHeaderVisible">
     <bool>false</bool>
    </attribute>
+   <row/>
    <column/>
    <column/>
    <column/>
