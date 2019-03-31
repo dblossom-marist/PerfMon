@@ -39,7 +39,6 @@ class gui(QDialog):
             self.tableWidget.insertRow(self.tableWidget.rowCount())
             for col in range(0,self.tableWidget.columnCount()):
                 self.tableWidget.setItem(row,col,QTableWidgetItem(str(process[col])))
-                self.tableWidget.insertRow(self.tableWidget.rowCount())
             row = row + 1
             
 app = QApplication(sys.argv)
