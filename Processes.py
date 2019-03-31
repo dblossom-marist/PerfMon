@@ -31,10 +31,10 @@ class Processes():
                 name = pid.name()
                 username = pid.username()
                 memPercent = pid.memory_percent()
-                #ioCounters = pid.io_counters()
-                diskRead = 100 #ioCounters[2];
-                diskWrite = 200 #ioCounters[3];
-                cpuPercent = 1 # pid.cpu_percent(interval=0.1)
+                ioCounters = pid.io_counters()
+                diskRead = ioCounters[2];
+                diskWrite = ioCounters[3];
+                cpuPercent = pid.cpu_percent(interval=0.1)
                 isRunning = pid.status() # pid.is_running()  #pid.status() will do text version
                 priority = pid.nice() 
                 
