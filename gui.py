@@ -25,16 +25,23 @@ class gui(QDialog):
 
         #while True:
         processesTuple = proc.collectProcesses()
-        #time.sleep(10)      
+        #time.sleep(10)
+        
+        # Remove all rows from the table, if they exist
+        for row in range(0, self.tableWidget.rowCount()):
+            self.tableWidget.removeRow(0)
+            
+        # Populate the table with process info
         row = 0
         #self.tableWidget.insertRow(0)
         #self.tableWidget.insertRow(0)
         for process in processesTuple:
+            self.tableWidget.insertRow(self.tableWidget.rowCount())
             for col in range(0,self.tableWidget.columnCount()):
                 self.tableWidget.setItem(row,col,QTableWidgetItem(str(process[col])))
                 self.tableWidget.insertRow(self.tableWidget.rowCount())
             row = row + 1
-             
+            
 app = QApplication(sys.argv)
 widget = gui()
 widget.updateGui()
