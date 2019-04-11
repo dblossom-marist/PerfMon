@@ -52,7 +52,7 @@ class MetricsCollector:
 #proc = Processes()
 
 metric = MetricsCollector()
-metric.cpuPercent()
+metric.cpuPercentOverall()()
 
 #while True:
 #    proc.updateDatabase()
