@@ -5,7 +5,7 @@ Created on Mar 23, 2019
 '''
 
 import psutil
-import sqlite3
+from Database import Database
 
 class Processes():
     '''
@@ -46,30 +46,11 @@ class Processes():
         return returnTupleList
             
     def updateDatabase(self):
+        db = Database()
+        db.updateProcessTable(self.collectProcesses())
         
-        # pid, name, username, memory, disk_read, disk_write, cpu, running, priority
-        
-        processTupleList = self.collectProcesses()
-        
-        conn = sqlite3.connect('MetricCollector')
-                
-        cur = conn.cursor()
-        
-        for processTuple in processTupleList:
-            
-            cur.execute("SELECT * FROM processes WHERE pid=? AND name=? AND username=?", 
-                (processTuple[0],processTuple[1],processTuple[2],))
-            
-            if len(cur.fetchall()) == 1:
-                cur.execute("UPDATE processes SET memory=?,disk_read=?,disk_write=?,cpu=?,running=?,priority=? WHERE pid=? AND name=? AND username=?",
-                            (processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8],
-                             processTuple[0],processTuple[1],processTuple[2],))
-            else:
-                cur.execute("INSERT INTO processes (pid,name,username,memory,disk_read,disk_write,cpu,running,priority) VALUES (?,?,?,?,?,?,?,?,?)",
-                            (processTuple[0],processTuple[1],processTuple[2],processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8]))
-                
-                conn.commit()
-                
-        conn.close()
+p = Processes()
+
+p.updateDatabase()
 
 
