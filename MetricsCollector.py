@@ -28,13 +28,16 @@ class MetricsCollector:
         for time in cputime:
             print(time)
         
-    def percent(self):
-        count = 1
-        while(count > 0):
+    ''' A method to collect the average percent of CPU usage over
+        all CPUS in the system '''    
+    def cpuPercentOverall(self):
+        while True:
             # Setting percpu=false will average, true is all
-            percent = psutil.cpu_percent(interval=1, percpu=True)
+            percent = psutil.cpu_percent(interval=0.5)
             print(percent)
-            count-=1
+            
+    def cpuPercentPerCPU(self):
+        pass #TODO, implement LOL!
             
     def stats(self):
         stats = psutil.cpu_stats()
@@ -49,6 +52,7 @@ class MetricsCollector:
 #proc = Processes()
 
 metric = MetricsCollector()
+metric.cpuPercent()
 
 #while True:
 #    proc.updateDatabase()
