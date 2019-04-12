@@ -48,6 +48,7 @@ class Processes():
     def updateDatabase(self):
         db = Database()
         db.updateProcessTable(self.collectProcesses())
+        db.close()
         
 p = Processes()
 
