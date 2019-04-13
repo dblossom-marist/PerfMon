@@ -10,6 +10,9 @@ class Database():
     '''
     classdocs
     '''
+    dbName = "MetricCollector.db"
+    dbLocation = ""
+    
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
                          (pid integer, name text, username text, memory numeric, 
                          disk_read numeric, disk_write numeric, cpu numeric, 
@@ -24,16 +27,7 @@ class Database():
         self.cursor = self.conn.cursor()
         
     def connect(self):
-        self.conn = sqlite3.connect('MetricCollector.db')
-
-    def processTableExist(self):
-        self.cursor.execute("""SELECT COUNT(*) 
-                                      FROM sqlite_master 
-                                      WHERE name = 'processes'""")
-        if len(self.cursor.fetchall()) == 1:
-            return True
-        else:
-            return False
+        self.conn = sqlite3.connect(self.dbLocation + self.dbName)
         
     def createProcessTable(self):
         self.cursor.execute(self.sqlCreateProcTbl)
