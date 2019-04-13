@@ -30,12 +30,18 @@ class Database():
     sqlInsertAllCPUrow = """INSERT INTO all_cpus (cpuN,user,nice,system,idle,iowait,
                                                   irq,softirq,steal,guest,guest_nice,date) 
                                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"""
+                                                
+    sqlCreateOverallCPUavgTbl = """CREATE TABLE if not exists all_cpus_avg
+                                   (all_cpu numeric, date numeric)"""
+                                   
+    sqlInsertCPUOverallAvg = """INSERT INTO all_cpus_avg (all_cpu, date) VALUES(?,?)"""
 
     def __init__(self):
         self.connect()
         self.setCursor()
         self.createProcessTable()
         self.createCPUTimesAllTable()
+        self.createOverallCPUUsageTable()
         
     def setCursor(self):
         self.cursor = self.conn.cursor()
@@ -50,11 +56,21 @@ class Database():
     def createCPUTimesAllTable(self):
         self.cursor.execute(self.sqlCreateCPUsTbl)
         self.conn.commit()
+        
+    def createOverallCPUUsageTable(self):
+        self.cursor.execute(self.sqlCreateOverallCPUavgTbl)
+        self.conn.commit()
                 
     def close(self):
         self.conn.commit()
         self.cursor.close()
         self.conn.close()
+        
+    def updateOverAllCPUUsageTable(self, cpuInfo, dateInfo):
+        #TODO: Database cleanup - 24 hours, 48 hours? 
+        self.cursor.execute(self.sqlInsertCPUOverallAvg,(cpuInfo,dateInfo))
+        self.conn.commit()
+        
         
     def updateCPUTimesAllTable(self, cpuTuple, date_time):
         cpuNumber = 0; #this will line up with cpuTuble
@@ -72,6 +88,7 @@ class Database():
                                     (cpuNumber,cpu[0],cpu[1],cpu[2],cpu[3],cpu[4],
                                         cpu[5],cpu[6],cpu[7],cpu[8],cpu[9],date_time))
             
+            self.conn.commit()
             cpuNumber = cpuNumber + 1
         
     def updateProcessTable(self, processTupleList):

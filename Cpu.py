@@ -32,6 +32,7 @@ class Cpu:
     def updateDatabase(self):
         db = Database()
         db.updateCPUTimesAllTable(self.allCPUTimes(), self.createTimeStamp())
+        db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), self.createTimeStamp())
         db.close()
         
 c = Cpu()
