@@ -5,39 +5,13 @@ Created on Mar 8, 2019
 '''
 
 import psutil
-from Processes import Processes
-import time
+#from Processes import Processes
+from Cpu import Cpu
 
 class MetricsCollector:
     
-    logicalCPUSs = 0
-    physicalCPUs = 0
-    
     def __init__(self):
-        #self.cpuTime()
-        #self.percent()
-        logicalCPUs = psutil.cpu_count(logical = True)
-        physicalCPUSs = psutil.cpu_count(logical = False)
-        print("Logical CPUS: " + str(logicalCPUs))
-        print("Physical CPUS: " + str(physicalCPUSs))
-       # self.diskinfo()        
-    
-    def cpuTime(self):
-
-        cputime = psutil.cpu_times(True)
-        for time in cputime:
-            print(time)
-        
-    ''' A method to collect the average percent of CPU usage over
-        all CPUS in the system '''    
-    def cpuPercentOverall(self):
-        while True:
-            # Setting percpu=false will average, true is all
-            percent = psutil.cpu_percent(interval=0.5)
-            print(percent)
-            
-    def cpuPercentPerCPU(self):
-        pass #TODO, implement LOL!
+        cpuPercent = Cpu.getOverallCPUPercent(self)
             
     def stats(self):
         stats = psutil.cpu_stats()
@@ -52,7 +26,6 @@ class MetricsCollector:
 #proc = Processes()
 
 metric = MetricsCollector()
-metric.cpuPercentOverall()
 
 #while True:
 #    proc.updateDatabase()
