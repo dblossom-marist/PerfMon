@@ -15,10 +15,9 @@ class Cpu:
 
     def allCPUTimes(self):
         return psutil.cpu_times(True)
-            
-        #avgCPUTime = psutil.cpu_times(False)
-        #for time in avgCPUTime:
-        #    print(time)
+    
+    def avgCPUTimes(self):
+        return psutil.cpu_times(False)
         
     ''' A method to collect the average percent of CPU usage over
         all CPUS in the system '''    
@@ -27,12 +26,13 @@ class Cpu:
         return psutil.cpu_percent(interval=0.5)
         
     def getPerCPUPercent(self):
-        pass #TODO, implement LOL!
+        return psutil.cpu_percent(interval=0.5, percpu=True)
     
     def updateDatabase(self):
         db = Database()
         db.updateCPUTimesAllTable(self.allCPUTimes(), self.createTimeStamp())
         db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), self.createTimeStamp())
+        db.updatePerCPUPercentTable(self.getPerCPUPercent(), self.createTimeStamp())
         db.close()
         
 c = Cpu()

@@ -35,6 +35,11 @@ class Database():
                                    (all_cpu numeric, date numeric)"""
                                    
     sqlInsertCPUOverallAvg = """INSERT INTO all_cpus_avg (all_cpu, date) VALUES(?,?)"""
+    
+    sqlCreatePerCpuPercentTbl = """CREATE TABLE if not exists per_cpu_percent
+                                (cpu integer, cpu_percent numeric, date numeric)"""
+                                
+    sqlInsertPerCpuPercent = """INSERT INTO per_cpu_percent(cpu,cpu_percent,date) VALUES(?,?,?)"""
 
     def __init__(self):
         self.connect()
@@ -42,6 +47,7 @@ class Database():
         self.createProcessTable()
         self.createCPUTimesAllTable()
         self.createOverallCPUUsageTable()
+        self.createPerCPUPercentTable()
         
     def setCursor(self):
         self.cursor = self.conn.cursor()
@@ -60,17 +66,19 @@ class Database():
     def createOverallCPUUsageTable(self):
         self.cursor.execute(self.sqlCreateOverallCPUavgTbl)
         self.conn.commit()
-                
-    def close(self):
+        
+    def createPerCPUPercentTable(self):
+        self.cursor.execute(self.sqlCreatePerCpuPercentTbl)
         self.conn.commit()
-        self.cursor.close()
-        self.conn.close()
         
     def updateOverAllCPUUsageTable(self, cpuInfo, dateInfo):
         #TODO: Database cleanup - 24 hours, 48 hours? 
         self.cursor.execute(self.sqlInsertCPUOverallAvg,(cpuInfo,dateInfo))
         self.conn.commit()
         
+    def updatePerCPUPercentTable(self,cpuPercentTuple, dateInfo):
+        for cpu in range(0, len(cpuPercentTuple)):
+            self.cursor.execute(self.sqlInsertPerCpuPercent, (cpu, cpuPercentTuple[cpu],dateInfo))      
         
     def updateCPUTimesAllTable(self, cpuTuple, date_time):
         cpuNumber = 0; #this will line up with cpuTuble
@@ -108,5 +116,9 @@ class Database():
                             (processTuple[0],processTuple[1],processTuple[2],processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8]))
                 
                 self.conn.commit()   
-
+                
+    def close(self):
+        self.conn.commit()
+        self.cursor.close()
+        self.conn.close()
                 
