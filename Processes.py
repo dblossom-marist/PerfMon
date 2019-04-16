@@ -16,7 +16,7 @@ class Processes():
     def __init__(self):
         pass
         
-    def collectProcesses(self, allUsers):
+    def collectProcesses(self, allUsers=False):
             
         returnTupleList = []
         for proc in psutil.process_iter():
@@ -53,7 +53,7 @@ class Processes():
         
     def updateDatabase(self):
         db = Database()
-        db.updateProcessTable(self.collectProcesses(False))
+        db.updateProcessTable(self.collectProcesses(True))
         db.close()
         
 p = Processes()
