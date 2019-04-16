@@ -22,29 +22,30 @@ class Processes():
         for proc in psutil.process_iter():
             try:
                 #self.pids = proc.as_dict(attrs=['name', 'pid', 'username', 'memory_percent', 'cpu_percent'])
-                
                 process = proc.as_dict(attrs=['pid'])
-                
                 p_id = process['pid']
-                
-                pid = psutil.Process(p_id)
-                name = pid.name()
-                username = pid.username()
-                memPercent = pid.memory_percent()
-                ioCounters = pid.io_counters()
-                diskRead = ioCounters[2];
-                diskWrite = ioCounters[3];
-                cpuPercent = pid.cpu_percent(interval=0.1)
-                isRunning = pid.status() # pid.is_running()  #pid.status() will do text version
-                priority = pid.nice() 
-                
-                returnTupleList.append((p_id,name,username,memPercent,diskRead,diskWrite,cpuPercent,isRunning,priority))
-                                                    
+                returnTupleList.append(self.getProcessInfo(p_id))
             except psutil.NoSuchProcess:
                 pass
             
         return returnTupleList
-            
+    
+    def getProcessInfo(self, pid):
+             
+        process = psutil.Process(pid)
+        name = process.name()
+        username = process.username()
+        memPercent = process.memory_percent()
+        ioCounters = process.io_counters()
+        diskRead = ioCounters[2];
+        diskWrite = ioCounters[3];
+        cpuPercent = process.cpu_percent(interval=0.1)
+        #cpuPercent = process.cpu_percent(interval=None)
+        isRunning = process.status() # process.is_running()  #process.status() will do text version
+        priority = process.nice()
+        
+        return (pid, name, username, memPercent, diskRead, diskWrite, cpuPercent, isRunning, priority)
+        
     def updateDatabase(self):
         db = Database()
         db.updateProcessTable(self.collectProcesses())
