@@ -5,6 +5,7 @@ Created on Mar 23, 2019
 '''
 
 import psutil
+import os
 from Database import Database
 
 class Processes():
@@ -15,16 +16,20 @@ class Processes():
     def __init__(self):
         pass
         
-    def collectProcesses(self):
-        
+    def collectProcesses(self, allUsers):
+            
         returnTupleList = []
-        
         for proc in psutil.process_iter():
             try:
-                #self.pids = proc.as_dict(attrs=['name', 'pid', 'username', 'memory_percent', 'cpu_percent'])
-                process = proc.as_dict(attrs=['pid'])
+                process = proc.as_dict(attrs=['pid', 'username'])
                 p_id = process['pid']
-                returnTupleList.append(self.getProcessInfo(p_id))
+                user = process['username']                
+                uname = os.getlogin()
+                if not allUsers and (user == uname):
+                    returnTupleList.append(self.getProcessInfo(p_id))
+                elif allUsers:
+                    returnTupleList.append(self.getProcessInfo(p_id))
+
             except psutil.NoSuchProcess:
                 pass
             
@@ -48,7 +53,7 @@ class Processes():
         
     def updateDatabase(self):
         db = Database()
-        db.updateProcessTable(self.collectProcesses())
+        db.updateProcessTable(self.collectProcesses(False))
         db.close()
         
 p = Processes()
