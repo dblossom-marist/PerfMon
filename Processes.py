@@ -7,6 +7,7 @@ Created on Mar 23, 2019
 import psutil
 import os
 from Database import Database
+import time
 
 class Processes():
     '''
@@ -53,11 +54,6 @@ class Processes():
         
     def updateDatabase(self):
         db = Database()
-        db.updateProcessTable(self.collectProcesses(True))
+        db.updateProcessTable(self.collectProcesses(True)) #Yes, we want to collect all processes for DB
         db.close()
         
-p = Processes()
-
-p.updateDatabase()
-
-

@@ -2,6 +2,7 @@
 import psutil
 import datetime
 from Database import Database
+import time
 class Cpu:
     
     def __init__(self):
@@ -34,8 +35,4 @@ class Cpu:
         db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), self.createTimeStamp())
         db.updatePerCPUPercentTable(self.getPerCPUPercent(), self.createTimeStamp())
         db.close()
-        
-c = Cpu()
-c.updateDatabase()
 
-        
