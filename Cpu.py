@@ -2,7 +2,7 @@
 import psutil
 import datetime
 from Database import Database
-import time
+
 class Cpu:
     
     def __init__(self):
