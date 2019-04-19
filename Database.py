@@ -55,6 +55,7 @@ class Database():
         self.createOverallCPUUsageTable()
         self.createPerCPUPercentTable()
         self.createAverageMemoryTable()
+        a = 1 + 1 # Git being a pain, delete later
         
     def setCursor(self):
         self.cursor = self.conn.cursor()
