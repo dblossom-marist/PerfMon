@@ -14,7 +14,6 @@ from PyQt5 import QtCore
 g_timer = None
 mainUI = None
 
-#treeWidgetColumns = ["PID","Process","User","Memory", "Disk Read", "Disk Write","CPU","State","Priority"]
 treeWidgetColumns = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
 
 def paintUI(mainWindow):
@@ -24,11 +23,17 @@ def paintUI(mainWindow):
 
 def loadData():
     mainUI.treeWidget.clear()
-    for process in Processes().collectProcesses():
+    if mainUI.checkBox.checkState() == 2:
+        listOfProcesses = Processes().collectProcesses(True)
+    else:
+        listOfProcesses = Processes().collectProcesses(False)
+
+    for process in listOfProcesses:
         addRow = []
         for col in range(mainUI.treeWidget.columnCount()):
             addRow.append(str(process[col]))
         mainUI.treeWidget.addTopLevelItem(QTreeWidgetItem(addRow))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -43,7 +48,7 @@ if __name__ == "__main__":
 
     g_timer.timeout.connect(loadData)
 
-    g_timer.start(5000)
+    g_timer.start(3000)
 
     sys.exit(app.exec_())
 
