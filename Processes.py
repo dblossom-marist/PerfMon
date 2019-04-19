@@ -8,8 +8,6 @@ import psutil
 import os
 import time
 from Database import Database
-from psutil import cpu_percent
-
 
 class Processes():
     '''
