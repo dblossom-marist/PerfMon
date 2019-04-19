@@ -35,4 +35,8 @@ class Cpu:
         db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), self.createTimeStamp())
         db.updatePerCPUPercentTable(self.getPerCPUPercent(), self.createTimeStamp())
         db.close()
+        
+c = Cpu()
+c.updateDatabase()
 
+        
