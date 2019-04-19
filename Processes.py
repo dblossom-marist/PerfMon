@@ -62,7 +62,7 @@ class Processes():
         isRunning = process.status() # process.is_running()  #process.status() will do text version
         priority = process.nice()
         
-        return (name,username,cpuPercent,pid,self.convertBytes(memPercent.uss), diskRead, diskWrite,isRunning,priority)
+        return (name,username,cpuPercent,pid,self.convertBytes(memPercent.uss), self.convertBytes(diskRead), self.convertBytes(diskWrite),isRunning,priority)
         
     def updateDatabase(self):
         db = Database()
