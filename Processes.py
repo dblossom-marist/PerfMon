@@ -70,13 +70,3 @@ class Processes():
         # TODO: Do we want to get more granular? 
         db.updateProcessTable(self.collectProcesses(True))
         db.close()
-
-#===============================================================================
-# p = Processes()
-# while True:
-#     for proc in psutil.process_iter():
-#         p_id = proc.as_dict(attrs=['pid'])
-#         pp = p.getProcessInfo(p_id['pid'])
-#         if pp[6] > 0:
-#             print(str(pp[0]) + " - " + str(pp[6]))
-#===============================================================================

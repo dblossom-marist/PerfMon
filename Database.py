@@ -47,6 +47,9 @@ class Database():
                                 
     sqlInsertMemoryPercent = """INSERT INTO memory_percent(percent,date) VALUES(?,?)"""
 
+    sqlQueryProcessTbl = """SELECT * FROM processes WHERE pid=?"""
+
+
     def __init__(self):
         self.connect()
         self.setCursor()
@@ -55,7 +58,6 @@ class Database():
         self.createOverallCPUUsageTable()
         self.createPerCPUPercentTable()
         self.createAverageMemoryTable()
-        a = 1 + 1 # Git being a pain, delete later
         
     def setCursor(self):
         self.cursor = self.conn.cursor()
@@ -118,23 +120,64 @@ class Database():
     def updateProcessTable(self, processTupleList):
         # pid, name, username, memory, disk_read, disk_write, cpu, running, priority
         
+        #name[0],username[1],cpuPercent[2],pid[3],memPercent.uss[4] 
+        #diskRead[5],diskWrite[6],isRunning[7],priority[8]
+        
         for processTuple in processTupleList:
             
             self.cursor.execute("SELECT * FROM processes WHERE pid=? AND name=? AND username=?", 
-                (processTuple[0],processTuple[1],processTuple[2],))
+                (processTuple[3],processTuple[0],processTuple[1],))
             
             if len(self.cursor.fetchall()) == 1:
                 self.cursor.execute("UPDATE processes SET memory=?,disk_read=?,disk_write=?,cpu=?,running=?,priority=? WHERE pid=? AND name=? AND username=?",
-                            (processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8],
-                             processTuple[0],processTuple[1],processTuple[2]))
+                            (processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8],
+                             processTuple[3],processTuple[0],processTuple[1]))
             else:
                 self.cursor.execute("INSERT INTO processes (pid,name,username,memory,disk_read,disk_write,cpu,running,priority) VALUES (?,?,?,?,?,?,?,?,?)",
-                            (processTuple[0],processTuple[1],processTuple[2],processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8]))
+                            (processTuple[3],processTuple[0],processTuple[1],processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8]))
                 
                 self.conn.commit()   
                 
+    def queryProcessTable(self, pid=-1):
+        
+        if pid != -1:
+            # Expecting a tuple.
+            return self.cursor.execute(self.sqlQueryProcessTbl,(pid,))
+        else:
+            return self.cursor.execute("SELECT * FROM processes")
+        
+    def queryCPUTables(self):
+        return self.cursor.execute("SELECT * FROM all_cpus_avg")
+    
+    def queryMemTable(self):
+        return self.cursor.execute("SELECT * FROM memory_percent")
+        
+            
     def close(self):
         self.conn.commit()
         self.cursor.close()
         self.conn.close()
                 
+##########################################
+# UNCOMMENT BELOW TO SEE A FEW EXAMPLES  #
+##########################################
+
+#d = Database()
+# A process that probably doesn't exist
+#print(d.queryProcessTable(123456789).fetchall())
+
+# Process 1 ... it might exist
+#print(d.queryProcessTable(1).fetchall())
+
+# All processes
+#print(d.queryProcessTable().fetchall())
+
+# Overall CPU %
+#print(d.queryCPUTables().fetchall())
+
+# Overall mem %
+#print(d.queryMemTable().fetchall())
+
+
+
+
