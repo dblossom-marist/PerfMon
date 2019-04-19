@@ -4,6 +4,10 @@ Created on Mar 23, 2019
 '''
 
 import psutil
+import os
+import time
+from Database import Database
+from psutil import cpu_percent
 from Database import Database
 import time
 import getpass
@@ -17,22 +21,19 @@ class Processes():
 
     def __init__(self):
         pass
-
-    def convert_bytes(self,n):
+    
+    def convertBytes(self,number):
         symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
         prefix = {}
         for i, s in enumerate(symbols):
             prefix[s] = 1 << (i + 1) * 10
         for s in reversed(symbols):
-            if n >= prefix[s]:
-                value = float(n) / prefix[s]
+            if number >= prefix[s]:
+                value = float(number) / prefix[s]
                 return '%.1f%s' % (value, s)
-        return "%sB" % n
-
-    def collectProcesses(self):
-        print("Entering collectProcess")
-        start = time.time()
-
+        return "%sB" % number
+        
+    def collectProcesses(self, allUsers=False):
         returnTupleList = []
 
         for proc in psutil.process_iter():
@@ -71,14 +72,30 @@ class Processes():
 
         print(time.time() - start)
         return returnTupleList
-
+   
+    def getProcessInfo(self, pid):
+             
+        process = psutil.Process(pid)
+        
+        name = process.name()
+        username = process.username()
+        #memPercent = process.memory_percent()
+        memPercent = process.memory_full_info()
+        ioCounters = process.io_counters()
+        diskRead = ioCounters[2]
+        diskWrite = ioCounters[3]
+        cpuPercent = process.cpu_percent(interval=.00001) # TODO: get CPU percent to work better 
+        isRunning = process.status() # process.is_running()  #process.status() will do text version
+        priority = process.nice()
+        
+        return (name,username,cpuPercent,pid,self.convertBytes(memPercent.uss), diskRead, diskWrite,isRunning,priority)
+        
     def updateDatabase(self):
         db = Database()
-        db.updateProcessTable(self.collectProcesses())
+        # Pass True for only logged in user, False (or nothing) for all user processes
+        # TODO: Do we want to get more granular? 
+        db.updateProcessTable(self.collectProcesses(True))
         db.close()
-
-
-
 
 p = Processes()
 
