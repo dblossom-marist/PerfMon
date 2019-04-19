@@ -41,11 +41,6 @@ class Database():
                                 (cpu integer, cpu_percent numeric, date numeric)"""
                                 
     sqlInsertPerCpuPercent = """INSERT INTO per_cpu_percent(cpu,cpu_percent,date) VALUES(?,?,?)"""
-    
-    sqlCreateMemoryTbl = """CREATE TABLE if not exists memory_percent
-                                (percent numeric, date numeric)"""
-                                
-    sqlInsertMemoryPercent = """INSERT INTO memory_percent(percent,date) VALUES(?,?)"""
 
     def __init__(self):
         self.connect()
@@ -54,7 +49,6 @@ class Database():
         self.createCPUTimesAllTable()
         self.createOverallCPUUsageTable()
         self.createPerCPUPercentTable()
-        self.createAverageMemoryTable()
         
     def setCursor(self):
         self.cursor = self.conn.cursor()
@@ -62,12 +56,8 @@ class Database():
     def connect(self):
         self.conn = sqlite3.connect(self.dbLocation + self.dbName)
         
-    def createAverageMemoryTable(self):
-        self.cursor.execute(self.sqlCreateMemoryTbl)
-        self.conn.commit()
-        
-    def updateAverageMemoryTable(self, memoryPercent, dateInfo):
-        self.cursor.execute(self.sqlInsertMemoryPercent,(memoryPercent,dateInfo))
+    def createProcessTable(self):
+        self.cursor.execute(self.sqlCreateProcTbl)
         self.conn.commit()
         
     def createCPUTimesAllTable(self):
@@ -109,10 +99,6 @@ class Database():
             
             self.conn.commit()
             cpuNumber = cpuNumber + 1
-            
-    def createProcessTable(self):
-        self.cursor.execute(self.sqlCreateProcTbl)
-        self.conn.commit()
         
     def updateProcessTable(self, processTupleList):
         # pid, name, username, memory, disk_read, disk_write, cpu, running, priority
