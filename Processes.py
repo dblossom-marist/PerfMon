@@ -1,5 +1,6 @@
 '''
 Created on Mar 23, 2019
+
 @author: blossom
 '''
 
@@ -7,12 +8,6 @@ import psutil
 import os
 import time
 from Database import Database
-from psutil import cpu_percent
-from Database import Database
-import time
-import getpass
-import os
-
 
 class Processes():
     '''
@@ -34,45 +29,24 @@ class Processes():
         return "%sB" % number
         
     def collectProcesses(self, allUsers=False):
+            
         returnTupleList = []
-
         for proc in psutil.process_iter():
-            # Added if loop to send process that belongs only to the user.
-            # TODO : add option to show all users using menu or checkbox
-            # Issue : This loop will update database with only one user
-            # instead of all system process
-            if proc.username() == os.getlogin():
-                try:
-                    # self.pids = proc.as_dict(attrs=['name', 'pid', 'username', 'memory_percent', 'cpu_percent'])
+            try:
+                process = proc.as_dict(attrs=['pid', 'username'])
+                p_id = process['pid']
+                user = process['username']                
+                uname = os.getlogin()
+                if not allUsers and (user == uname):
+                    returnTupleList.append(self.getProcessInfo(p_id))
+                elif allUsers:
+                    returnTupleList.append(self.getProcessInfo(p_id))
 
-                    process = proc.as_dict(attrs=['pid'])
-
-                    p_id = process['pid']
-
-                    pid = psutil.Process(p_id)
-                    name = pid.name()
-                    username = pid.username()
-                    #memPercent = pid.memory_percent()
-                    mem = pid.memory_full_info()
-                    ioCounters = pid.io_counters()
-                    diskRead = ioCounters[2]
-                    diskWrite = ioCounters[3]
-                    cpuPercent = pid.cpu_percent(interval=.00001)
-                    #cpuPercent = 1
-                    isRunning = pid.status()  # pid.is_running()  #pid.status() will do text version
-                    priority = pid.nice()
-
-                    #returnTupleList.append(
-                        #(p_id, name, username, memPercent, diskRead, diskWrite, cpuPercent, isRunning, priority))
-                    returnTupleList.append(
-                        (name, username, cpuPercent,p_id,self.convert_bytes(mem.uss),self.convert_bytes(diskRead), self.convert_bytes(diskWrite), isRunning))
-
-                except psutil.NoSuchProcess:
-                    pass
-
-        print(time.time() - start)
+            except psutil.NoSuchProcess:
+                pass
+            
         return returnTupleList
-   
+    
     def getProcessInfo(self, pid):
              
         process = psutil.Process(pid)
@@ -97,6 +71,12 @@ class Processes():
         db.updateProcessTable(self.collectProcesses(True))
         db.close()
 
-p = Processes()
-
-#p.updateDatabase()
+#===============================================================================
+# p = Processes()
+# while True:
+#     for proc in psutil.process_iter():
+#         p_id = proc.as_dict(attrs=['pid'])
+#         pp = p.getProcessInfo(p_id['pid'])
+#         if pp[6] > 0:
+#             print(str(pp[0]) + " - " + str(pp[6]))
+#===============================================================================
