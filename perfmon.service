@@ -9,3 +9,6 @@ Description=PerfMon Performance Monitoring Service
 ExecStart=python3 /usr/share/perfmon/MetricsCollector.py
 Restart=always
 RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
