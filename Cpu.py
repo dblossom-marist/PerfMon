@@ -1,19 +1,18 @@
 
 import psutil
-import datetime
 from Database import Database
+from Pmutils import Pmutils
 # comment test... 
 
 class Cpu:
     
     def __init__(self):
-        logicalCPUs = psutil.cpu_count(logical = True)
-        physicalCPUSs = psutil.cpu_count(logical = False)
-        print("Logical CPUS: " + str(logicalCPUs))
-        print("Physical CPUS: " + str(physicalCPUSs))
-        
-    def createTimeStamp(self):
-        return datetime.datetime.now()
+        pass
+        # Not sure we need to collect the below ... 
+        #logicalCPUs = psutil.cpu_count(logical = True)
+        #physicalCPUSs = psutil.cpu_count(logical = False)
+        #print("Logical CPUS: " + str(logicalCPUs))
+        #print("Physical CPUS: " + str(physicalCPUSs))
 
     def allCPUTimes(self):
         return psutil.cpu_times(True)
@@ -32,7 +31,7 @@ class Cpu:
     
     def updateDatabase(self):
         db = Database()
-        db.updateCPUTimesAllTable(self.allCPUTimes(), self.createTimeStamp())
-        db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), self.createTimeStamp())
-        db.updatePerCPUPercentTable(self.getPerCPUPercent(), self.createTimeStamp())
+        db.updateCPUTimesAllTable(self.allCPUTimes(), Pmutils.createTimeStamp())
+        db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), Pmutils.createTimeStamp())
+        db.updatePerCPUPercentTable(self.getPerCPUPercent(), Pmutils.createTimeStamp())
         db.close()

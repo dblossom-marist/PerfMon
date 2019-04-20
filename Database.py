@@ -12,7 +12,7 @@ class Database():
     classdocs
     '''
     dbName = "MetricCollector.db"
-    dbLocation = ""
+    dbLocation = "/usr/share/perfmon/"
     
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
                          (pid integer, name text, username text, memory numeric, 

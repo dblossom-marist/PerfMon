@@ -2,6 +2,7 @@
 import datetime
 import psutil
 from Database import Database
+from Pmutils import Pmutils
 
 class Memory:
     
@@ -19,8 +20,8 @@ class Memory:
     
     def getAverageSystemMemory(self):
         mem = psutil.virtual_memory()
-        return mem[2]
+        return Pmutils.convertBytes(mem[2])
     
     def updateDatabase(self):
         db = Database()
-        db.updateAverageMemoryTable(self.getAverageSystemMemory(), self.createTimeStamp())
+        db.updateAverageMemoryTable(self.getAverageSystemMemory(), Pmutils.createTimeStamp())
