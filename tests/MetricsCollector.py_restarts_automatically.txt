@@ -1,0 +1,7 @@
+perfmon@perfmon-pc:/usr/share/perfmon$ ps -awx | grep MetricsCollector.py
+ 581 ?        Ss     0:02 /usr/bin/python3 /usr/share/perfmon/MetricsCollector.py
+
+perfmon@perfmon-pc:/usr/share/perfmon$ sudo kill -9 581
+
+perfmon@perfmon-pc:/usr/share/perfmon$ ps -awx | grep MetricsCollector.py
+2401 ?        Ss     0:00 /usr/bin/python3 /usr/share/perfmon/MetricsCollector.py
