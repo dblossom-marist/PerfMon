@@ -23,6 +23,10 @@ class Cpu:
     def getPerCPUPercent(self):
         return psutil.cpu_percent(interval=0.5, percpu=True)
     
+    def getCpuCount(self, logicalCpuCount = False):
+        if isinstance(logicalCpuCount, bool):
+            return psutil.cpu_count(logical = logicalCpuCount)
+
     def updateDatabase(self):
         db = Database()
         db.updateCPUTimesAllTable(self.allCPUTimes(), Pmutils.createTimeStamp())
