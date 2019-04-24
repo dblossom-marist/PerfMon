@@ -2,17 +2,11 @@
 import psutil
 from Database import Database
 from Pmutils import Pmutils
-# comment test... 
 
 class Cpu:
     
     def __init__(self):
         pass
-        # Not sure we need to collect the below ... 
-        #logicalCPUs = psutil.cpu_count(logical = True)
-        #physicalCPUSs = psutil.cpu_count(logical = False)
-        #print("Logical CPUS: " + str(logicalCPUs))
-        #print("Physical CPUS: " + str(physicalCPUSs))
 
     def allCPUTimes(self):
         return psutil.cpu_times(True)
