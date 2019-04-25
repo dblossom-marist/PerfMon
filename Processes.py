@@ -5,9 +5,9 @@ Created on Mar 23, 2019
 '''
 
 import psutil
-import os
-import time
 from Database import Database
+import getpass
+from Pmutils import Pmutils
 
 class Processes():
     '''
@@ -16,18 +16,7 @@ class Processes():
 
     def __init__(self):
         pass
-    
-    def convertBytes(self,number):
-        symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
-        prefix = {}
-        for i, s in enumerate(symbols):
-            prefix[s] = 1 << (i + 1) * 10
-        for s in reversed(symbols):
-            if number >= prefix[s]:
-                value = float(number) / prefix[s]
-                return '%.1f%s' % (value, s)
-        return "%sB" % number
-        
+            
     def collectProcesses(self, allUsers=False):
             
         returnTupleList = []
@@ -36,7 +25,8 @@ class Processes():
                 process = proc.as_dict(attrs=['pid', 'username'])
                 p_id = process['pid']
                 user = process['username']                
-                uname = os.getlogin()
+                #uname = os.getlogin()
+                uname = getpass.getuser()
                 if not allUsers and (user == uname):
                     returnTupleList.append(self.getProcessInfo(p_id))
                 elif allUsers:
@@ -62,11 +52,9 @@ class Processes():
         isRunning = process.status() # process.is_running()  #process.status() will do text version
         priority = process.nice()
         
-        return (name,username,cpuPercent,pid,self.convertBytes(memPercent.uss), self.convertBytes(diskRead), self.convertBytes(diskWrite),isRunning,priority)
+        return (name,username,cpuPercent,pid,Pmutils.convertBytes(memPercent.uss), Pmutils.convertBytes(diskRead), Pmutils.convertBytes(diskWrite),isRunning,priority)
         
     def updateDatabase(self):
         db = Database()
-        # Pass True for only logged in user, False (or nothing) for all user processes
-        # TODO: Do we want to get more granular? 
         db.updateProcessTable(self.collectProcesses(True))
         db.close()
