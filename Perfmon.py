@@ -6,20 +6,27 @@ Created on Mar 27, 2019
 
 from Processes import Processes
 import sys
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QAction, QMenu
 from PyQt5.uic import loadUi
 from PyQt5.Qt import QTreeWidgetItem
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
+import SystemInformation as si
 
 g_timer = None
 mainUI = None
 
 treeWidgetColumns = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
 
+def performMenu():
+    print("performMenu")
+
 def paintUI(mainWindow):
     global g_timer
     mainWindow.treeWidget.setColumnCount(len(treeWidgetColumns))
     mainWindow.treeWidget.setHeaderLabels(treeWidgetColumns)
+
+    mainUI.actionExit.triggered.connect(sys.exit)
+    mainUI.actionSystem_Information.triggered.connect(si.prepareUI)
 
 def loadData():
     mainUI.treeWidget.clear()
@@ -40,7 +47,8 @@ if __name__ == "__main__":
 
     mainUI = loadUi('gui/mainwindow.ui')
     paintUI(mainUI)
-    loadData()
+
+    #loadData()
 
     mainUI.show()
 
@@ -48,7 +56,9 @@ if __name__ == "__main__":
 
     g_timer.timeout.connect(loadData)
 
+
     g_timer.start(3000)
 
-    sys.exit(app.exec_())
+    app.exec_()
+    sys.exit()
 
