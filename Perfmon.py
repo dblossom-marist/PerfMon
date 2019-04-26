@@ -48,7 +48,7 @@ if __name__ == "__main__":
     mainUI = loadUi('gui/mainwindow.ui')
     paintUI(mainUI)
 
-    #loadData()
+    loadData()
 
     mainUI.show()
 
