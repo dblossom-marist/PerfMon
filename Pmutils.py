@@ -8,7 +8,7 @@ class Pmutils:
     
     @staticmethod
     def convertBytes(number):
-        if isinstance(number, float):
+        if isinstance(number, float) or isinstance(number, int):
             symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
             prefix = {}
             for i, s in enumerate(symbols):

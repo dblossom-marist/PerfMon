@@ -1,5 +1,6 @@
 from Cpu import Cpu
 from Pmutils import Pmutils
+from Processes import Processes
 
 # CPU Tests
 cpu = Cpu()
@@ -12,4 +13,7 @@ print(cpu.getCpuCount())
 pmu = Pmutils()
 print(pmu.convertBytes(4444.23432))
 print(pmu.convertBytes("not a number"))
-print(pmu.convertBytes(1)) 
+print(pmu.convertBytes(1))
+
+#Process Test
+proc = Processes()
