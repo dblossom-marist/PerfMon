@@ -20,8 +20,9 @@ class Memory:
     
     def getAverageSystemMemory(self):
         mem = psutil.virtual_memory()
-        return Pmutils.convertBytes(mem[2])
+        return mem[2]
     
     def updateDatabase(self):
         db = Database()
         db.updateAverageMemoryTable(self.getAverageSystemMemory(), Pmutils.createTimeStamp())
+        
