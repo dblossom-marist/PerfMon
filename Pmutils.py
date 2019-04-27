@@ -1,4 +1,8 @@
-
+'''
+A utility class for common methods required in multiple locations.
+@author: D. Blossom but credit to B. Murali for the convertBytes method
+'''
+# Needed imports
 import datetime
 
 class Pmutils:
@@ -6,6 +10,11 @@ class Pmutils:
     def __init__(self):
         pass
     
+    '''
+    A static method that will convert a number to a human readable string
+    IE: 2GB or 1MB for display in the GUI
+    @param number: the number to format.
+    '''
     @staticmethod
     def convertBytes(number):
         if isinstance(number, float) or isinstance(number, int):
@@ -19,6 +28,9 @@ class Pmutils:
                     return '%.1f%s' % (value, s)
             return "%sB" % number
     
+    '''
+    A simple method that returns date/time mainly used for DB stuff.
+    '''
     @staticmethod
     def createTimeStamp():
         return datetime.datetime.now()
