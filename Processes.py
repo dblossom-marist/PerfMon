@@ -16,11 +16,12 @@ class Processes():
     # No init needed,
     def __init__(self):
         pass
-            
-    # Method that collects all system processes
-    # @param allUsers a default (to false) parameter if
-    #  all users should be collected or current.
-    # @return a tuple of processes
+    '''        
+    Method that collects all system processes
+    @param allUsers a default (to false) parameter if
+           all users should be collected or current.
+    @return a tuple of processes
+    '''
     def collectProcesses(self, allUsers=False):
         # Tuple to return
         returnTupleList = []
@@ -42,10 +43,11 @@ class Processes():
             except psutil.NoSuchProcess:
                 pass
         return returnTupleList
-    
-    # Method that collects information on a processes given a PID
-    # @param pid the pid of the process to gather
-    # @return a tuple of process information
+    '''
+    Method that collects information on a processes given a PID
+    @param pid: the pid of the process to gather
+    @return a tuple of process information
+    '''
     def getProcessInfo(self, pid):
         
         process = psutil.Process(pid)
@@ -63,8 +65,9 @@ class Processes():
         priority = process.nice()
         
         return (name,username,cpuPercent,pid,Pmutils.convertBytes(memPercent.uss), Pmutils.convertBytes(diskRead), Pmutils.convertBytes(diskWrite),isRunning,priority)
-        
-    # A method that will update the database with all running system processes.
+    '''    
+    A method that will update the database with all running system processes.
+    '''
     def updateDatabase(self):
         db = Database()
         db.updateProcessTable(self.collectProcesses(True))
