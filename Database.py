@@ -9,7 +9,7 @@ class Database():
     
     # Name & Location of the database file
     dbName = "MetricCollector.db"
-    dbLocation = "/usr/bin/perfmon/"
+    dbLocation = "/usr/share/perfmon/"
     
     # The SQL command to create a process table
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
