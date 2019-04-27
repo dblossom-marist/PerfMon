@@ -1,9 +1,10 @@
-'''
+"""
 A utility class for common methods required in multiple locations.
 @author: D. Blossom but credit to B. Murali for the convertBytes method
-'''
+"""
 # Needed imports
 import datetime
+
 
 class Pmutils:
     

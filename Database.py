@@ -1,9 +1,10 @@
-'''
+"""
 A class that does all database interactions
 @author: blossom
-'''
+"""
 # Python SQLite library.
 import sqlite3
+
 
 class Database():
     
@@ -13,9 +14,9 @@ class Database():
     
     # The SQL command to create a process table
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
-                         (pid integer, name text, username text, memory numeric, 
-                         disk_read numeric, disk_write numeric, cpu numeric, 
-                         running integer, priority integer)"""
+                          (pid integer, name text, username text, memory numeric, 
+                          disk_read numeric, disk_write numeric, cpu numeric, 
+                          running integer, priority integer)"""
     
     # The SQL command to create the table for all CPUs running in system
     sqlCreateCPUsTbl = """CREATE TABLE if not exists all_cpus
@@ -135,20 +136,20 @@ class Database():
     Update CPU usage times table
     '''
     def updateCPUTimesAllTable(self, cpuTuple, date_time):
-        cpuNumber = 0; #this will line up with cpuTuble
+        cpuNumber = 0  # this will line up with cpuTuple
         for cpu in cpuTuple:
             
-            self.cursor.execute("SELECT * FROM all_cpus WHERE cpuN=?",(cpuNumber,))
+            self.cursor.execute("SELECT * FROM all_cpus WHERE cpuN=?", (cpuNumber,))
             
             if len(self.cursor.fetchall()) == 1:
                 # Just update row
                 self.cursor.execute(self.sqlUpdateAllCPUrow,
-                                    (cpu[0],cpu[1],cpu[2],cpu[3],cpu[4],cpu[5],
-                                     cpu[6],cpu[7],cpu[8],cpu[9],date_time,cpuNumber))
+                                    (cpu[0], cpu[1], cpu[2], cpu[3], cpu[4], cpu[5],
+                                     cpu[6], cpu[7], cpu[8], cpu[9], date_time, cpuNumber))
             else:
                 self.cursor.execute(self.sqlInsertAllCPUrow,
-                                    (cpuNumber,cpu[0],cpu[1],cpu[2],cpu[3],cpu[4],
-                                        cpu[5],cpu[6],cpu[7],cpu[8],cpu[9],date_time))
+                                    (cpuNumber, cpu[0], cpu[1], cpu[2], cpu[3], cpu[4],
+                                     cpu[5], cpu[6], cpu[7], cpu[8], cpu[9], date_time))
             
             self.conn.commit()
             cpuNumber = cpuNumber + 1
@@ -170,15 +171,15 @@ class Database():
         for processTuple in processTupleList:
             
             self.cursor.execute("SELECT * FROM processes WHERE pid=? AND name=? AND username=?", 
-                (processTuple[3],processTuple[0],processTuple[1],))
+                                (processTuple[3], processTuple[0], processTuple[1],))
             
             if len(self.cursor.fetchall()) == 1:
                 self.cursor.execute("UPDATE processes SET memory=?,disk_read=?,disk_write=?,cpu=?,running=?,priority=? WHERE pid=? AND name=? AND username=?",
-                            (processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8],
-                             processTuple[3],processTuple[0],processTuple[1]))
+                                    (processTuple[4], processTuple[5], processTuple[6], processTuple[2], processTuple[7], processTuple[8],
+                                     processTuple[3], processTuple[0], processTuple[1]))
             else:
                 self.cursor.execute("INSERT INTO processes (pid,name,username,memory,disk_read,disk_write,cpu,running,priority) VALUES (?,?,?,?,?,?,?,?,?)",
-                            (processTuple[3],processTuple[0],processTuple[1],processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8]))
+                                    (processTuple[3], processTuple[0], processTuple[1], processTuple[4], processTuple[5], processTuple[6], processTuple[2], processTuple[7], processTuple[8]))
                 
                 self.conn.commit()   
     
@@ -190,7 +191,7 @@ class Database():
         
         if pid != -1:
             # Expecting a tuple.
-            return self.cursor.execute(self.sqlQueryProcessTbl,(pid,))
+            return self.cursor.execute(self.sqlQueryProcessTbl, (pid,))
         else:
             return self.cursor.execute("SELECT * FROM processes")
    
@@ -210,9 +211,9 @@ class Database():
     Some closing clean up ..
     '''
     def close(self):
-        # Anything not commited?
+        # Anything not committed?
         self.conn.commit()
         # Close cursor
         self.cursor.close()
-        # Offically closed for business. 
+        # Officially closed for business.
         self.conn.close()

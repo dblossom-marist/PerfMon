@@ -1,14 +1,15 @@
-'''
+"""
 A class that collects needed memory information about the system.
 Mainly overall memory usage.
 @author: D. Blossom
-'''
+"""
 # Python imports
 import datetime
 import psutil
 # Import classes created from this project
 from Database import Database
 from Pmutils import Pmutils
+
 
 class Memory:
     
@@ -37,4 +38,3 @@ class Memory:
     def updateDatabase(self):
         db = Database()
         db.updateAverageMemoryTable(self.getAverageSystemMemory(), Pmutils.createTimeStamp())
-        

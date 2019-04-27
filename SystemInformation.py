@@ -75,4 +75,3 @@ def show():
     timer.timeout.connect(si.load_data)
     timer.start(1000)
     si.dialog.exec_()
-

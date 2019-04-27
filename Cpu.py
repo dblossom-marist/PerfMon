@@ -1,11 +1,12 @@
-'''
+"""
 A class that collects CPU system information
-'''
+"""
 # Python lib import
 import psutil
-# Imports from this porject
+# Imports from this project
 from Database import Database
 from Pmutils import Pmutils
+
 
 class Cpu:
     
@@ -21,7 +22,7 @@ class Cpu:
     
     '''
     Returns the average CPU times
-    @return: the aveage CPU times
+    @return: the average CPU times
     '''
     def avgCPUTimes(self):
         return psutil.cpu_times(False)
@@ -61,4 +62,3 @@ class Cpu:
         db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), Pmutils.createTimeStamp())
         db.updatePerCPUPercentTable(self.getPerCPUPercent(), Pmutils.createTimeStamp())
         db.close()
-        

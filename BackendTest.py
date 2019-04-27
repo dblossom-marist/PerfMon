@@ -9,11 +9,11 @@ print(cpu.getCpuCount(True))
 print(cpu.getCpuCount(False))
 print(cpu.getCpuCount())
 
-#Pmtutils Tests
+# Pmtutils Tests
 pmu = Pmutils()
 print(pmu.convertBytes(4444.23432))
 print(pmu.convertBytes("not a number"))
 print(pmu.convertBytes(1))
 
-#Process Test
+# Process Test
 proc = Processes()

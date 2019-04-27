@@ -1,8 +1,8 @@
-'''
+"""
 This class is used to collect Linux system processes.
 Created on Mar 23, 2019
 @author: Dan Blossom
-'''
+"""
 
 # Python Libs needed
 import psutil
@@ -11,11 +11,13 @@ import getpass
 from Database import Database
 from Pmutils import Pmutils
 
+
 class Processes():
  
     # No init needed,
     def __init__(self):
         pass
+
     '''        
     Method that collects all system processes
     @param allUsers a default (to false) parameter if
@@ -32,7 +34,7 @@ class Processes():
                 process = proc.as_dict(attrs=['pid', 'username'])
                 p_id = process['pid']
                 user = process['username']                
-                #uname = os.getlogin()
+                # uname = os.getlogin()
                 uname = getpass.getuser()
                 # Do we collect all users or not? Then call getProcess.
                 if not allUsers and (user == uname):
@@ -43,6 +45,7 @@ class Processes():
             except psutil.NoSuchProcess:
                 pass
         return returnTupleList
+
     '''
     Method that collects information on a processes given a PID
     @param pid: the pid of the process to gather
@@ -60,11 +63,12 @@ class Processes():
         ioCounters = process.io_counters()
         diskRead = ioCounters[2]
         diskWrite = ioCounters[3]
-        cpuPercent = process.cpu_percent(interval=.00001) # TODO: get CPU percent to work better 
-        isRunning = process.status() # process.is_running()  #process.status() will do text version
+        cpuPercent = process.cpu_percent(interval=.00001)  # TODO: get CPU percent to work better
+        isRunning = process.status()  # process.is_running()  #process.status() will do text version
         priority = process.nice()
         
-        return (name,username,cpuPercent,pid,Pmutils.convertBytes(memPercent.uss), Pmutils.convertBytes(diskRead), Pmutils.convertBytes(diskWrite),isRunning,priority)
+        return (name, username, cpuPercent, pid, Pmutils.convertBytes(memPercent.uss), Pmutils.convertBytes(diskRead), Pmutils.convertBytes(diskWrite), isRunning, priority)
+
     '''    
     A method that will update the database with all running system processes.
     '''
