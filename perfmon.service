@@ -6,7 +6,7 @@
 Description=PerfMon Performance Monitoring Service
 
 [Service]
-ExecStart=python3 /usr/share/perfmon/MetricsCollector.py
+ExecStart=python3 /usr/bin/PerfMonMetricsCollector
 Restart=always
 RestartSec=5s
 
