@@ -13,152 +13,152 @@ class Database():
     dbLocation = "/usr/share/perfmon/"
     
     # The SQL command to create a process table
-    sqlCreateProcTbl = """CREATE TABLE if not exists processes
+    sql_create_proc_tbl = """CREATE TABLE if not exists processes
                           (pid integer, name text, username text, memory numeric, 
                           disk_read numeric, disk_write numeric, cpu numeric, 
                           running integer, priority integer)"""
     
     # The SQL command to create the table for all CPUs running in system
-    sqlCreateCPUsTbl = """CREATE TABLE if not exists all_cpus
+    sql_create_cpus_tbl = """CREATE TABLE if not exists all_cpus
                           (cpuN integer, user numeric, nice numeric, system numeric,
                           idle numeric, iowait numeric, irq numeric, softirq numeric,
                           steal numeric, guest numeric, guest_nice numeric, date numeric)"""
                           
     # The SQL statement to update all rows in the all CPU table 
-    sqlUpdateAllCPUrow = """UPDATE all_cpus SET user=?, nice=?, system=?, idle=?,
+    sql_update_all_cpu_row = """UPDATE all_cpus SET user=?, nice=?, system=?, idle=?,
                             iowait=?, irq=?, softirq=?, steal=?, guest=?, guest_nice=?,
                             date=? WHERE cpuN=?"""
     
     # The SQL statement to insert a new row into all CPU table
-    sqlInsertAllCPUrow = """INSERT INTO all_cpus (cpuN,user,nice,system,idle,iowait,
+    sql_insert_all_cpu_row = """INSERT INTO all_cpus (cpuN,user,nice,system,idle,iowait,
                                                   irq,softirq,steal,guest,guest_nice,date) 
                                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"""
                                                 
     # The SQL statement to create the CPU avg useage table
-    sqlCreateOverallCPUavgTbl = """CREATE TABLE if not exists all_cpus_avg
+    sql_create_overall_cpu_avg_tbl = """CREATE TABLE if not exists all_cpus_avg
                                    (all_cpu numeric, date numeric)"""
                                    
     # The SQL statement to insert a row in the average CPU table
-    sqlInsertCPUOverallAvg = """INSERT INTO all_cpus_avg (all_cpu, date) VALUES(?,?)"""
+    sql_insert_cpu_overall_avg = """INSERT INTO all_cpus_avg (all_cpu, date) VALUES(?,?)"""
     
     # The SQL statement to create the CPU percent per CPU table
-    sqlCreatePerCpuPercentTbl = """CREATE TABLE if not exists per_cpu_percent
+    sql_create_per_cpu_percent_tbl = """CREATE TABLE if not exists per_cpu_percent
                                 (cpu integer, cpu_percent numeric, date numeric)"""
     
     # The SQL statement to insert into per cpu percent table
-    sqlInsertPerCpuPercent = """INSERT INTO per_cpu_percent(cpu,cpu_percent,date) VALUES(?,?,?)"""
+    sql_insert_per_cpu_percent = """INSERT INTO per_cpu_percent(cpu,cpu_percent,date) VALUES(?,?,?)"""
     
     # The SQL statement to create the memory percent table
-    sqlCreateMemoryTbl = """CREATE TABLE if not exists memory_percent
+    sql_create_memory_tbl = """CREATE TABLE if not exists memory_percent
                                 (percent numeric, date numeric)"""
     
     # The SQL statement to insert a row into memory table
-    sqlInsertMemoryPercent = """INSERT INTO memory_percent(percent,date) VALUES(?,?)"""
+    sql_insert_memory_percent = """INSERT INTO memory_percent(percent,date) VALUES(?,?)"""
 
     # The SQL statement to query the database
-    sqlQueryProcessTbl = """SELECT * FROM processes WHERE pid=?"""
+    sql_query_process_tbl = """SELECT * FROM processes WHERE pid=?"""
 
     '''
     Connect to DB, set the cursor and create all tables.
     '''
     def __init__(self):
         self.connect()
-        self.setCursor()
-        self.createProcessTable()
-        self.createCPUTimesAllTable()
-        self.createOverallCPUUsageTable()
-        self.createPerCPUPercentTable()
-        self.createAverageMemoryTable()
+        self.set_cursor()
+        self.create_process_table()
+        self.create_cpu_times_all_table()
+        self.create_overall_cpu_usage_table()
+        self.create_per_cpu_percent_table()
+        self.create_average_memory_table()
         
     '''
     A method to set the cursor
     '''
-    def setCursor(self):
+    def set_cursor(self):
         self.cursor = self.conn.cursor()
         
     '''
     A method to connect to the DB
     '''
     def connect(self):
-        self.conn = sqlite3.connect(self.dbLocation + self.dbName)
+        self.conn = sqlite3.connect(self.db_location + self.db_name)
         
     '''
     Create the memory table
     '''
-    def createAverageMemoryTable(self):
-        self.cursor.execute(self.sqlCreateMemoryTbl)
+    def create_average_memory_table(self):
+        self.cursor.execute(self.sql_create_memory_tbl)
         self.conn.commit()
         
     '''
     Update the avg memory percent table
     '''
-    def updateAverageMemoryTable(self, memoryPercent, dateInfo):
-        self.cursor.execute(self.sqlInsertMemoryPercent,(memoryPercent,dateInfo))
+    def update_average_memory_table(self, memoryPercent, dateInfo):
+        self.cursor.execute(self.sql_insert_memory_percent, (memoryPercent, dateInfo))
         self.conn.commit()
        
     '''
     Create the all CPU times usage table
     ''' 
-    def createCPUTimesAllTable(self):
-        self.cursor.execute(self.sqlCreateCPUsTbl)
+    def create_cpu_times_all_table(self):
+        self.cursor.execute(self.sql_create_cpus_tbl)
         self.conn.commit()
     
     '''
     Create overall CPU usage table
     ''' 
-    def createOverallCPUUsageTable(self):
-        self.cursor.execute(self.sqlCreateOverallCPUavgTbl)
+    def create_overall_cpu_usage_table(self):
+        self.cursor.execute(self.sql_create_overall_cpu_avg_tbl)
         self.conn.commit()
         
     '''
     Create per CPU usage table
     '''
-    def createPerCPUPercentTable(self):
-        self.cursor.execute(self.sqlCreatePerCpuPercentTbl)
+    def create_per_cpu_percent_table(self):
+        self.cursor.execute(self.sql_create_per_cpu_percent_tbl)
         self.conn.commit()
         
     '''
     Update overall CPU usage able
     '''
-    def updateOverAllCPUUsageTable(self, cpuInfo, dateInfo):
-        #TODO: Database cleanup - 24 hours, 48 hours? 
-        self.cursor.execute(self.sqlInsertCPUOverallAvg,(cpuInfo,dateInfo))
+    def update_over_all_cpu_usage_table(self, cpuInfo, dateInfo):
+        # TODO: Database cleanup - 24 hours, 48 hours?
+        self.cursor.execute(self.sql_insert_cpu_overall_avg, (cpuInfo, dateInfo))
         self.conn.commit()
         
     '''
     Update per CPU percent table
     '''
-    def updatePerCPUPercentTable(self,cpuPercentTuple, dateInfo):
+    def update_per_cpu_percent_table(self, cpuPercentTuple, dateInfo):
         for cpu in range(0, len(cpuPercentTuple)):
-            self.cursor.execute(self.sqlInsertPerCpuPercent, (cpu, cpuPercentTuple[cpu],dateInfo))      
+            self.cursor.execute(self.sql_insert_per_cpu_percent, (cpu, cpuPercentTuple[cpu], dateInfo))
         
     '''
     Update CPU usage times table
     '''
-    def updateCPUTimesAllTable(self, cpuTuple, date_time):
-        cpuNumber = 0  # this will line up with cpuTuple
-        for cpu in cpuTuple:
+    def update_cpu_times_all_table(self, cpu_tuple, date_time):
+        cpu_number = 0  # this will line up with cpu_tuple
+        for cpu in cpu_tuple:
             
-            self.cursor.execute("SELECT * FROM all_cpus WHERE cpuN=?", (cpuNumber,))
+            self.cursor.execute("SELECT * FROM all_cpus WHERE cpuN=?", (cpu_number,))
             
             if len(self.cursor.fetchall()) == 1:
                 # Just update row
-                self.cursor.execute(self.sqlUpdateAllCPUrow,
+                self.cursor.execute(self.sql_update_all_cpu_row,
                                     (cpu[0], cpu[1], cpu[2], cpu[3], cpu[4], cpu[5],
-                                     cpu[6], cpu[7], cpu[8], cpu[9], date_time, cpuNumber))
+                                     cpu[6], cpu[7], cpu[8], cpu[9], date_time, cpu_number))
             else:
-                self.cursor.execute(self.sqlInsertAllCPUrow,
-                                    (cpuNumber, cpu[0], cpu[1], cpu[2], cpu[3], cpu[4],
+                self.cursor.execute(self.sql_insert_all_cpu_row,
+                                    (cpu_number, cpu[0], cpu[1], cpu[2], cpu[3], cpu[4],
                                      cpu[5], cpu[6], cpu[7], cpu[8], cpu[9], date_time))
             
             self.conn.commit()
-            cpuNumber = cpuNumber + 1
+            cpu_number = cpu_number + 1
             
     '''
     Create the process table
     '''
-    def createProcessTable(self):
-        self.cursor.execute(self.sqlCreateProcTbl)
+    def create_process_table(self):
+        self.cursor.execute(self.sql_create_proc_tbl)
         self.conn.commit()
         
     '''
@@ -166,9 +166,9 @@ class Database():
                              once it worked, I left it in fear of breaking it.
     @param processTupleList: The list of processes to put in DB 
     '''
-    def updateProcessTable(self, processTupleList):
+    def update_process_table(self, process_tuple_list):
         
-        for processTuple in processTupleList:
+        for processTuple in process_tuple_list:
             
             self.cursor.execute("SELECT * FROM processes WHERE pid=? AND name=? AND username=?", 
                                 (processTuple[3], processTuple[0], processTuple[1],))
@@ -187,24 +187,24 @@ class Database():
     Query process table
     @param pid: optional param that will return that process or all nothing passed.
     '''            
-    def queryProcessTable(self, pid=-1):
+    def query_process_table(self, pid=-1):
         
         if pid != -1:
             # Expecting a tuple.
-            return self.cursor.execute(self.sqlQueryProcessTbl, (pid,))
+            return self.cursor.execute(self.sql_query_process_tbl, (pid,))
         else:
             return self.cursor.execute("SELECT * FROM processes")
    
     '''
     Query the CPU table
     '''    
-    def queryCPUTables(self):
+    def query_cpu_tables(self):
         return self.cursor.execute("SELECT * FROM all_cpus_avg")
     
     '''
     Query the memory table
     '''
-    def queryMemTable(self):
+    def query_mem_table(self):
         return self.cursor.execute("SELECT * FROM memory_percent")
         
     '''

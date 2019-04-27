@@ -17,14 +17,14 @@ class Cpu:
     Returns a tuple of CPU usage times
     @return: a tuple of CPU usage times
     '''
-    def allCPUTimes(self):
+    def all_cpu_times(self):
         return psutil.cpu_times(True)
     
     '''
     Returns the average CPU times
     @return: the average CPU times
     '''
-    def avgCPUTimes(self):
+    def avg_cpu_times(self):
         return psutil.cpu_times(False)
         
     ''' 
@@ -32,7 +32,7 @@ class Cpu:
     all CPUS in the system
     @return: average cpu usage. 
     '''    
-    def getOverallCPUPercent(self):
+    def get_overall_cpu_percent(self):
         # Setting percpu=false will average, true is all
         return psutil.cpu_percent(interval=0.5)
     
@@ -40,7 +40,7 @@ class Cpu:
     A method that returns average of cpu usgae
     @return: average cpu usage
     '''
-    def getPerCPUPercent(self):
+    def get_per_cpu_percent(self):
         return psutil.cpu_percent(interval=0.5, percpu=True)
     
     '''
@@ -48,17 +48,17 @@ class Cpu:
     @param logicalCpuCount: False (default) return logical or physical CPUs.
     @return: CPU count requested
     '''
-    def getCpuCount(self, logicalCpuCount = False):
-        if isinstance(logicalCpuCount, bool):
-            return psutil.cpu_count(logical = logicalCpuCount)
+    def get_cpu_count(self, logical_cpu_count = False):
+        if isinstance(logical_cpu_count, bool):
+            return psutil.cpu_count(logical = logical_cpu_count)
 
     '''
     A method that updates the databases.
     TODO: maybe make a different method for each table?
     '''
-    def updateDatabase(self):
+    def update_database(self):
         db = Database()
-        db.updateCPUTimesAllTable(self.allCPUTimes(), Pmutils.createTimeStamp())
-        db.updateOverAllCPUUsageTable(self.getOverallCPUPercent(), Pmutils.createTimeStamp())
-        db.updatePerCPUPercentTable(self.getPerCPUPercent(), Pmutils.createTimeStamp())
+        db.update_cpu_times_all_table(self.all_cpu_times(), Pmutils.create_time_stamp())
+        db.update_over_all_cpu_usage_table(self.get_overall_cpu_percent(), Pmutils.create_time_stamp())
+        db.update_per_cpu_percent_table(self.get_per_cpu_percent(), Pmutils.create_time_stamp())
         db.close()

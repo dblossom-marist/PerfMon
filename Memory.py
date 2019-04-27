@@ -18,23 +18,23 @@ class Memory:
     
     '''
     A method that returns a timestamp that can be deprecated due to Pmutils
-    @deprecated: use Pmutils.createTimeStamp() instead.
+    @deprecated: use Pmutils.create_time_stamp() instead.
     @return: date/time
     ''' 
-    def createTimeStamp(self):
+    def create_time_stamp(self):
         return datetime.datetime.now()
     
     '''
     A method that returns overall system memory percent
     @return: overall system memory percent
     '''
-    def getAverageSystemMemory(self):
+    def get_average_system_memory(self):
         mem = psutil.virtual_memory()
         return mem[2]
     
     '''
     A method that updates the database with average system memory.
     '''
-    def updateDatabase(self):
+    def update_database(self):
         db = Database()
-        db.updateAverageMemoryTable(self.getAverageSystemMemory(), Pmutils.createTimeStamp())
+        db.update_average_memory_table(self.get_average_system_memory(), Pmutils.create_time_stamp())

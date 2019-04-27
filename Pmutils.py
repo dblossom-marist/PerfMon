@@ -1,6 +1,6 @@
 """
 A utility class for common methods required in multiple locations.
-@author: D. Blossom but credit to B. Murali for the convertBytes method
+@author: D. Blossom but credit to B. Murali for the convert_bytes method
 """
 # Needed imports
 import datetime
@@ -17,7 +17,7 @@ class Pmutils:
     @param number: the number to format.
     '''
     @staticmethod
-    def convertBytes(number):
+    def convert_bytes(number):
         if isinstance(number, float) or isinstance(number, int):
             symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
             prefix = {}
@@ -33,5 +33,5 @@ class Pmutils:
     A simple method that returns date/time mainly used for DB stuff.
     '''
     @staticmethod
-    def createTimeStamp():
+    def create_time_stamp():
         return datetime.datetime.now()

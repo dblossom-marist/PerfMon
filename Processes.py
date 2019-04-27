@@ -24,9 +24,9 @@ class Processes():
            all users should be collected or current.
     @return a tuple of processes
     '''
-    def collectProcesses(self, allUsers=False):
+    def collect_processes(self, all_users=False):
         # Tuple to return
-        returnTupleList = []
+        return_tuple_list = []
         # Loop through all processes.
         for proc in psutil.process_iter():
             # Does process exist?
@@ -37,21 +37,21 @@ class Processes():
                 # uname = os.getlogin()
                 uname = getpass.getuser()
                 # Do we collect all users or not? Then call getProcess.
-                if not allUsers and (user == uname):
-                    returnTupleList.append(self.getProcessInfo(p_id))
-                elif allUsers:
-                    returnTupleList.append(self.getProcessInfo(p_id))
+                if not all_users and (user == uname):
+                    return_tuple_list.append(self.get_process_info(p_id))
+                elif all_users:
+                    return_tuple_list.append(self.get_process_info(p_id))
             # Do nothing if it doesn't exist
             except psutil.NoSuchProcess:
                 pass
-        return returnTupleList
+        return return_tuple_list
 
     '''
     Method that collects information on a processes given a PID
     @param pid: the pid of the process to gather
     @return a tuple of process information
     '''
-    def getProcessInfo(self, pid):
+    def get_process_info(self, pid):
         
         process = psutil.Process(pid)
         
@@ -59,20 +59,20 @@ class Processes():
         username = process.username()
         #memPercent = process.memory_percent()
         # Returns all info about the memory.
-        memPercent = process.memory_full_info()
-        ioCounters = process.io_counters()
-        diskRead = ioCounters[2]
-        diskWrite = ioCounters[3]
-        cpuPercent = process.cpu_percent(interval=.00001)  # TODO: get CPU percent to work better
-        isRunning = process.status()  # process.is_running()  #process.status() will do text version
+        mem_percent = process.memory_full_info()
+        io_counters = process.io_counters()
+        disk_read = io_counters[2]
+        disk_write = io_counters[3]
+        cpu_percent = process.cpu_percent(interval=.00001)  # TODO: get CPU percent to work better
+        is_running = process.status()  # process.is_running()  #process.status() will do text version
         priority = process.nice()
         
-        return (name, username, cpuPercent, pid, Pmutils.convertBytes(memPercent.uss), Pmutils.convertBytes(diskRead), Pmutils.convertBytes(diskWrite), isRunning, priority)
+        return (name, username, cpu_percent, pid, Pmutils.convert_bytes(mem_percent.uss), Pmutils.convert_bytes(disk_read), Pmutils.convert_bytes(disk_write), is_running, priority)
 
     '''    
     A method that will update the database with all running system processes.
     '''
-    def updateDatabase(self):
+    def update_database(self):
         db = Database()
-        db.updateProcessTable(self.collectProcesses(True))
+        db.update_process_table(self.collect_processes(True))
         db.close()

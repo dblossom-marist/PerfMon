@@ -4,16 +4,16 @@ from Processes import Processes
 
 # CPU Tests
 cpu = Cpu()
-print(cpu.getCpuCount("bad info"))
-print(cpu.getCpuCount(True))
-print(cpu.getCpuCount(False))
-print(cpu.getCpuCount())
+print(cpu.get_cpu_count("bad info"))
+print(cpu.get_cpu_count(True))
+print(cpu.get_cpu_count(False))
+print(cpu.get_cpu_count())
 
 # Pmtutils Tests
 pmu = Pmutils()
-print(pmu.convertBytes(4444.23432))
-print(pmu.convertBytes("not a number"))
-print(pmu.convertBytes(1))
+print(pmu.convert_bytes(4444.23432))
+print(pmu.convert_bytes("not a number"))
+print(pmu.convert_bytes(1))
 
 # Process Test
 proc = Processes()

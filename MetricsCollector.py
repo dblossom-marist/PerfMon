@@ -23,11 +23,11 @@ class MetricsCollector:
     @staticmethod
     def run():
         cpu = Cpu()
-        cpu.updateDatabase()
+        cpu.update_database()
         mem = Memory()
-        mem.updateDatabase()
+        mem.update_database()
         proc = Processes()
-        proc.updateDatabase()
+        proc.update_database()
 
 
 # Run in a loop every minute.
