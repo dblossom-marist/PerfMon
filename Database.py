@@ -6,7 +6,7 @@ A class that does all database interactions
 import sqlite3
 
 
-class Database():
+class Database:
     
     # Name & Location of the database file
     dbName = "MetricCollector.db"
@@ -92,8 +92,8 @@ class Database():
     '''
     Update the avg memory percent table
     '''
-    def update_average_memory_table(self, memoryPercent, dateInfo):
-        self.cursor.execute(self.sql_insert_memory_percent, (memoryPercent, dateInfo))
+    def update_average_memory_table(self, memory_percent, date_info):
+        self.cursor.execute(self.sql_insert_memory_percent, (memory_percent, date_info))
         self.conn.commit()
        
     '''
@@ -120,17 +120,17 @@ class Database():
     '''
     Update overall CPU usage able
     '''
-    def update_over_all_cpu_usage_table(self, cpuInfo, dateInfo):
+    def update_over_all_cpu_usage_table(self, cpu_info, date_info):
         # TODO: Database cleanup - 24 hours, 48 hours?
-        self.cursor.execute(self.sql_insert_cpu_overall_avg, (cpuInfo, dateInfo))
+        self.cursor.execute(self.sql_insert_cpu_overall_avg, (cpu_info, date_info))
         self.conn.commit()
         
     '''
     Update per CPU percent table
     '''
-    def update_per_cpu_percent_table(self, cpuPercentTuple, dateInfo):
-        for cpu in range(0, len(cpuPercentTuple)):
-            self.cursor.execute(self.sql_insert_per_cpu_percent, (cpu, cpuPercentTuple[cpu], dateInfo))
+    def update_per_cpu_percent_table(self, cpu_percent_tuple, date_info):
+        for cpu in range(0, len(cpu_percent_tuple)):
+            self.cursor.execute(self.sql_insert_per_cpu_percent, (cpu, cpu_percent_tuple[cpu], date_info))
         
     '''
     Update CPU usage times table

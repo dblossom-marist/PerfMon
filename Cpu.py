@@ -48,9 +48,9 @@ class Cpu:
     @param logicalCpuCount: False (default) return logical or physical CPUs.
     @return: CPU count requested
     '''
-    def get_cpu_count(self, logical_cpu_count = False):
+    def get_cpu_count(self, logical_cpu_count=False):
         if isinstance(logical_cpu_count, bool):
-            return psutil.cpu_count(logical = logical_cpu_count)
+            return psutil.cpu_count(logical=logical_cpu_count)
 
     '''
     A method that updates the databases.

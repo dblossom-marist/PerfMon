@@ -57,7 +57,7 @@ class Processes():
         
         name = process.name()
         username = process.username()
-        #memPercent = process.memory_percent()
+        # memPercent = process.memory_percent()
         # Returns all info about the memory.
         mem_percent = process.memory_full_info()
         io_counters = process.io_counters()
