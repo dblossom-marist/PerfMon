@@ -1,10 +1,11 @@
-'''
+"""
 Class to load the main screen of Perfmon
-'''
+"""
 from PyQt5.QtWidgets import QApplication, QTreeWidgetItem
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-import sys,SystemInformation
+import sys
+import SystemInformation
 from Processes import Processes
 
 app = QApplication(sys.argv)
@@ -12,11 +13,11 @@ allUsers = 2
 timer = QtCore.QTimer()
 
 
-class Perfmon():
+class Perfmon:
     def __init__(self):
         self.mainScreen = loadUi('gui/mainwindow.ui')
         # Column names in TreeWidget
-        self.treeWidgetColumnsInMainScreen = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
+        self.treeWidgetColumnsInMainScreen = ["Process", "User", "% CPU", "PID", "Memory", "DiskRead", "DiskWrite", "State"]
 
     def load_ui(self):
         self.mainScreen.treeWidget.setColumnCount(len(self.treeWidgetColumnsInMainScreen))

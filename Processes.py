@@ -12,7 +12,7 @@ from Database import Database
 from Pmutils import Pmutils
 
 
-class Processes():
+class Processes:
  
     # No init needed,
     def __init__(self):
