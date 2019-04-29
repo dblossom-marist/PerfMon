@@ -1,0 +1,14 @@
+# A simple systemd service file for enabling the
+# perfmon applicaiton
+# Author D. Blossom
+
+[Unit]
+Description=PerfMon Performance Monitoring Service
+
+[Service]
+ExecStart=python3 /usr/bin/PerfMonMetricsCollector
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,34 +1,34 @@
 '''
-Created on Mar 8, 2019
-
+A classes used as a driver to run the needed classes/methods
+in the backend writing system information to a SQLite database
 @author: blossom
 '''
 
-import psutil
-#from Processes import Processes
+# Import from Python lib
+import time
+# Import from classes created for this project.
+from Processes import Processes
 from Cpu import Cpu
+from Memory import Memory
 
 class MetricsCollector:
     
     def __init__(self):
-        cpuPercent = Cpu.getOverallCPUPercent(self)
-    #    self.stats()
-    #    self.diskinfo()
-            
-    #def stats(self):
-    #    stats = psutil.cpu_stats()
-    #    print(stats)
-        
-    #def diskinfo(self):
-    #    print(psutil.disk_partitions())
-    #    for mount in psutil.disk_partitions():
-    #        print(mount[1],mount[2]) # prints the mount point
-    #        print(psutil.disk_usage(mount[1])[2]) # prints disk free space
-        
-#proc = Processes()
+        pass
+    
+    '''
+    A static method that does everything, the 'driver'
+    '''
+    @staticmethod
+    def run():
+        cpu = Cpu()
+        cpu.updateDatabase()
+        mem = Memory()
+        mem.updateDatabase()
+        proc = Processes()
+        proc.updateDatabase()
 
-metric = MetricsCollector()
-
-#while True:
-#    proc.updateDatabase()
-#    time.sleep(10)
+# Run in a loop every minute.
+while True:
+    MetricsCollector.run()
+    time.sleep(60)

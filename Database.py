@@ -1,52 +1,65 @@
 '''
-Created on Apr 11, 2019
-
+A class that does all database interactions
 @author: blossom
 '''
-# test
-
+# Python SQLite library.
 import sqlite3
 
 class Database():
-    '''
-    classdocs
-    '''
-    dbName = "MetricCollector.db"
-    dbLocation = ""
     
+    # Name & Location of the database file
+    dbName = "MetricCollector.db"
+    dbLocation = "/usr/share/perfmon/"
+    
+    # The SQL command to create a process table
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
                          (pid integer, name text, username text, memory numeric, 
                          disk_read numeric, disk_write numeric, cpu numeric, 
                          running integer, priority integer)"""
-                         
+    
+    # The SQL command to create the table for all CPUs running in system
     sqlCreateCPUsTbl = """CREATE TABLE if not exists all_cpus
                           (cpuN integer, user numeric, nice numeric, system numeric,
                           idle numeric, iowait numeric, irq numeric, softirq numeric,
                           steal numeric, guest numeric, guest_nice numeric, date numeric)"""
                           
+    # The SQL statement to update all rows in the all CPU table 
     sqlUpdateAllCPUrow = """UPDATE all_cpus SET user=?, nice=?, system=?, idle=?,
                             iowait=?, irq=?, softirq=?, steal=?, guest=?, guest_nice=?,
                             date=? WHERE cpuN=?"""
-                            
+    
+    # The SQL statement to insert a new row into all CPU table
     sqlInsertAllCPUrow = """INSERT INTO all_cpus (cpuN,user,nice,system,idle,iowait,
                                                   irq,softirq,steal,guest,guest_nice,date) 
                                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"""
                                                 
+    # The SQL statement to create the CPU avg useage table
     sqlCreateOverallCPUavgTbl = """CREATE TABLE if not exists all_cpus_avg
                                    (all_cpu numeric, date numeric)"""
                                    
+    # The SQL statement to insert a row in the average CPU table
     sqlInsertCPUOverallAvg = """INSERT INTO all_cpus_avg (all_cpu, date) VALUES(?,?)"""
     
+    # The SQL statement to create the CPU percent per CPU table
     sqlCreatePerCpuPercentTbl = """CREATE TABLE if not exists per_cpu_percent
                                 (cpu integer, cpu_percent numeric, date numeric)"""
-                                
+    
+    # The SQL statement to insert into per cpu percent table
     sqlInsertPerCpuPercent = """INSERT INTO per_cpu_percent(cpu,cpu_percent,date) VALUES(?,?,?)"""
     
+    # The SQL statement to create the memory percent table
     sqlCreateMemoryTbl = """CREATE TABLE if not exists memory_percent
                                 (percent numeric, date numeric)"""
-                                
+    
+    # The SQL statement to insert a row into memory table
     sqlInsertMemoryPercent = """INSERT INTO memory_percent(percent,date) VALUES(?,?)"""
 
+    # The SQL statement to query the database
+    sqlQueryProcessTbl = """SELECT * FROM processes WHERE pid=?"""
+
+    '''
+    Connect to DB, set the cursor and create all tables.
+    '''
     def __init__(self):
         self.connect()
         self.setCursor()
@@ -55,43 +68,72 @@ class Database():
         self.createOverallCPUUsageTable()
         self.createPerCPUPercentTable()
         self.createAverageMemoryTable()
-        a = 1 + 1 # Git being a pain, delete later
         
+    '''
+    A method to set the cursor
+    '''
     def setCursor(self):
         self.cursor = self.conn.cursor()
         
+    '''
+    A method to connect to the DB
+    '''
     def connect(self):
         self.conn = sqlite3.connect(self.dbLocation + self.dbName)
         
+    '''
+    Create the memory table
+    '''
     def createAverageMemoryTable(self):
         self.cursor.execute(self.sqlCreateMemoryTbl)
         self.conn.commit()
         
+    '''
+    Update the avg memory percent table
+    '''
     def updateAverageMemoryTable(self, memoryPercent, dateInfo):
         self.cursor.execute(self.sqlInsertMemoryPercent,(memoryPercent,dateInfo))
         self.conn.commit()
-        
+       
+    '''
+    Create the all CPU times usage table
+    ''' 
     def createCPUTimesAllTable(self):
         self.cursor.execute(self.sqlCreateCPUsTbl)
         self.conn.commit()
-        
+    
+    '''
+    Create overall CPU usage table
+    ''' 
     def createOverallCPUUsageTable(self):
         self.cursor.execute(self.sqlCreateOverallCPUavgTbl)
         self.conn.commit()
         
+    '''
+    Create per CPU usage table
+    '''
     def createPerCPUPercentTable(self):
         self.cursor.execute(self.sqlCreatePerCpuPercentTbl)
         self.conn.commit()
         
+    '''
+    Update overall CPU usage able
+    '''
     def updateOverAllCPUUsageTable(self, cpuInfo, dateInfo):
         #TODO: Database cleanup - 24 hours, 48 hours? 
         self.cursor.execute(self.sqlInsertCPUOverallAvg,(cpuInfo,dateInfo))
         self.conn.commit()
         
+    '''
+    Update per CPU percent table
+    '''
     def updatePerCPUPercentTable(self,cpuPercentTuple, dateInfo):
         for cpu in range(0, len(cpuPercentTuple)):
             self.cursor.execute(self.sqlInsertPerCpuPercent, (cpu, cpuPercentTuple[cpu],dateInfo))      
         
+    '''
+    Update CPU usage times table
+    '''
     def updateCPUTimesAllTable(self, cpuTuple, date_time):
         cpuNumber = 0; #this will line up with cpuTuble
         for cpu in cpuTuple:
@@ -111,30 +153,66 @@ class Database():
             self.conn.commit()
             cpuNumber = cpuNumber + 1
             
+    '''
+    Create the process table
+    '''
     def createProcessTable(self):
         self.cursor.execute(self.sqlCreateProcTbl)
         self.conn.commit()
         
+    '''
+    Update process table ... the SQL statements are baked in here for no reason other than
+                             once it worked, I left it in fear of breaking it.
+    @param processTupleList: The list of processes to put in DB 
+    '''
     def updateProcessTable(self, processTupleList):
-        # pid, name, username, memory, disk_read, disk_write, cpu, running, priority
         
         for processTuple in processTupleList:
             
             self.cursor.execute("SELECT * FROM processes WHERE pid=? AND name=? AND username=?", 
-                (processTuple[0],processTuple[1],processTuple[2],))
+                (processTuple[3],processTuple[0],processTuple[1],))
             
             if len(self.cursor.fetchall()) == 1:
                 self.cursor.execute("UPDATE processes SET memory=?,disk_read=?,disk_write=?,cpu=?,running=?,priority=? WHERE pid=? AND name=? AND username=?",
-                            (processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8],
-                             processTuple[0],processTuple[1],processTuple[2]))
+                            (processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8],
+                             processTuple[3],processTuple[0],processTuple[1]))
             else:
                 self.cursor.execute("INSERT INTO processes (pid,name,username,memory,disk_read,disk_write,cpu,running,priority) VALUES (?,?,?,?,?,?,?,?,?)",
-                            (processTuple[0],processTuple[1],processTuple[2],processTuple[3],processTuple[4],processTuple[5],processTuple[6],processTuple[7],processTuple[8]))
+                            (processTuple[3],processTuple[0],processTuple[1],processTuple[4],processTuple[5],processTuple[6],processTuple[2],processTuple[7],processTuple[8]))
                 
                 self.conn.commit()   
-                
+    
+    '''
+    Query process table
+    @param pid: optional param that will return that process or all nothing passed.
+    '''            
+    def queryProcessTable(self, pid=-1):
+        
+        if pid != -1:
+            # Expecting a tuple.
+            return self.cursor.execute(self.sqlQueryProcessTbl,(pid,))
+        else:
+            return self.cursor.execute("SELECT * FROM processes")
+   
+    '''
+    Query the CPU table
+    '''    
+    def queryCPUTables(self):
+        return self.cursor.execute("SELECT * FROM all_cpus_avg")
+    
+    '''
+    Query the memory table
+    '''
+    def queryMemTable(self):
+        return self.cursor.execute("SELECT * FROM memory_percent")
+        
+    '''
+    Some closing clean up ..
+    '''
     def close(self):
+        # Anything not commited?
         self.conn.commit()
+        # Close cursor
         self.cursor.close()
+        # Offically closed for business. 
         self.conn.close()
-                
