@@ -1,63 +1,57 @@
 '''
-Created on Mar 27, 2019
-
-@author: blossom
+Class to load the main screen of Perfmon
 '''
-
-from Processes import Processes
-import sys
-from PyQt5.QtWidgets import QApplication, QAction, QMenu
+from PyQt5.QtWidgets import QApplication, QTreeWidgetItem
+from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.Qt import QTreeWidgetItem
-from PyQt5 import QtCore, QtGui
-import SystemInformation as si
+import sys,SystemInformation
+from Processes import Processes
 
-g_timer = None
-mainUI = None
-
-treeWidgetColumns = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
-
-def performMenu():
-    print("performMenu")
-
-def paintUI(mainWindow):
-    global g_timer
-    mainWindow.treeWidget.setColumnCount(len(treeWidgetColumns))
-    mainWindow.treeWidget.setHeaderLabels(treeWidgetColumns)
-
-    mainUI.actionExit.triggered.connect(sys.exit)
-    mainUI.actionSystem_Information.triggered.connect(si.prepareUI)
-
-def loadData():
-    mainUI.treeWidget.clear()
-    if mainUI.checkBox.checkState() == 2:
-        listOfProcesses = Processes().collectProcesses(True)
-    else:
-        listOfProcesses = Processes().collectProcesses(False)
-
-    for process in listOfProcesses:
-        addRow = []
-        for col in range(mainUI.treeWidget.columnCount()):
-            addRow.append(str(process[col]))
-        mainUI.treeWidget.addTopLevelItem(QTreeWidgetItem(addRow))
+app = QApplication(sys.argv)
+allUsers = 2
+timer = QtCore.QTimer()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+class Perfmon():
+    def __init__(self):
+        self.mainScreen = loadUi('gui/mainwindow.ui')
+        # Column names in TreeWidget
+        self.treeWidgetColumnsInMainScreen = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
 
-    mainUI = loadUi('gui/mainwindow.ui')
-    paintUI(mainUI)
+    def load_ui(self):
+        self.mainScreen.treeWidget.setColumnCount(len(self.treeWidgetColumnsInMainScreen))
+        self.mainScreen.treeWidget.setHeaderLabels(self.treeWidgetColumnsInMainScreen)
 
-    loadData()
+        # File->exit menu
+        self.mainScreen.actionExit.triggered.connect(sys.exit)
+        # View->system information
+        self.mainScreen.actionSystem_Information.triggered.connect(SystemInformation.show)
+        self.mainScreen.show()
 
-    mainUI.show()
+    def load_data(self):
+        self.mainScreen.treeWidget.clear()
+        # Collect process based on the status of the checkbox
+        if self.mainScreen.checkBox.checkState() == allUsers:
+            list_of_processes = Processes().collectProcesses(True)
+        else:
+            list_of_processes = Processes().collectProcesses(False)
 
-    g_timer = QtCore.QTimer()
+        # Iterate through the process and add them to the tree widget.
+        for process in list_of_processes:
+            add_row = []
+            for col in range(self.mainScreen.treeWidget.columnCount()):
+                add_row.append(str(process[col]))
+            self.mainScreen.treeWidget.addTopLevelItem(QTreeWidgetItem(add_row))
 
-    g_timer.timeout.connect(loadData)
 
+if __name__ == '__main__':
+    p = Perfmon()
+    p.load_ui()
+    p.load_data()
 
-    g_timer.start(3000)
+    # Refresh screen every 3 seconds
+    timer.timeout.connect(p.load_data)
+    timer.start(3000)
 
     app.exec_()
     sys.exit()
