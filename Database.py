@@ -62,6 +62,9 @@ class Database:
     Connect to DB, set the cursor and create all tables.
     '''
     def __init__(self):
+        self.cursor = None
+        self.conn = None
+
         self.connect()
         self.set_cursor()
         self.create_process_table()
