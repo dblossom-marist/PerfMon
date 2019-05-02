@@ -236,23 +236,32 @@ class Database():
     '''
     Query CPU Table for an hour
     '''    
-    def queryhourCPUAvgTable(self, time):
-        if time < 12:
-            date1 = str(datetime.date.today()) + " 0" + str(time) + ":00"
+    def queryhourCPUAvgTable(self, hour, minute=0):
+        # quick and dirty minute string .... 
+        minute_string = ""
+        if minute < 0 or minute > 59:
+            minute_string = ":00" # just make it top of hour
+        if minute < 10:
+            minute_string = ":0" + str(minute)
         else:
-            date1 = str(datetime.date.today()) + " " + str(time) + ":00"
+            minute_string = ":" + str(minute)
+        
+        if hour < 12:
+            date1 = str(datetime.date.today()) + " 0" + str(hour) + minute_string
+        else:
+            date1 = str(datetime.date.today()) + " " + str(hour) + minute_string
 
-        next_hour = time + 1
+        next_hour = hour + 1
         if next_hour == 24: # it's midnight
             next_hour = 0
             # break this up into multiple steps for readablility
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            date2 = str(tomorrow) +  " 0" + str(next_hour) + ":00"
+            date2 = str(tomorrow) +  " 0" + str(next_hour) + minute_string
         else:
             if next_hour < 12:
-                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + ":00"
+                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + minute_string
             else:
-                date2 = str(datetime.date.today()) + " " + str(next_hour) + ":00"
+                date2 = str(datetime.date.today()) + " " + str(next_hour) + minute_string
                         
         #TODO: add checks for parms or bad things will happen.        
         self.conn.row_factory = lambda cursor, row: row[0]
@@ -271,23 +280,31 @@ class Database():
     '''
     Query memory table for hour
     '''
-    def queryhourMEMAvgTable(self, time):
-        if time < 12:
-            date1 = str(datetime.date.today()) + " 0" + str(time) + ":00"
+    def queryhourMEMAvgTable(self, hour, minute):
+        minute_string = ""
+        if minute < 0 or minute > 59:
+            minute_string = ":00" # just make it top of hour
+        if minute < 10:
+            minute_string = ":0" + str(minute)
         else:
-            date1 = str(datetime.date.today()) + " " + str(time) + ":00"
+            minute_string = ":" + str(minute)
+        
+        if hour < 12:
+            date1 = str(datetime.date.today()) + " 0" + str(hour) + minute_string
+        else:
+            date1 = str(datetime.date.today()) + " " + str(hour) + minute_string
 
-        next_hour = time + 1
+        next_hour = hour + 1
         if next_hour == 24: # it's midnight
             next_hour = 0
             # break this up into multiple steps for readablility
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            date2 = str(tomorrow) +  " 0" + str(next_hour) + ":00"
+            date2 = str(tomorrow) +  " 0" + str(next_hour) + minute_string
         else:
             if next_hour < 12:
-                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + ":00"
+                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + minute_string
             else:
-                date2 = str(datetime.date.today()) + " " + str(next_hour) + ":00"
+                date2 = str(datetime.date.today()) + " " + str(next_hour) + minute_string
                         
         #TODO: add checks for parms or bad things will happen.        
         self.conn.row_factory = lambda cursor, row: row[0]
