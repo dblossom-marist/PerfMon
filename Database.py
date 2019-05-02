@@ -4,12 +4,14 @@ A class that does all database interactions
 '''
 # Python SQLite library.
 import sqlite3
+import datetime
+from test.datetimetester import HOUR
 
 class Database():
     
     # Name & Location of the database file
     dbName = "MetricCollector.db"
-    dbLocation = "/usr/share/perfmon/" #TODO: put in /var
+    dbLocation = ""#/usr/share/perfmon/" #TODO: put in /var
     
     # The SQL command to create a process table
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
@@ -60,7 +62,7 @@ class Database():
     # The SQL statement to return overall CPU avgs between two datea
     sqlQueryDateRangeCPUAvgTbl = """SELECT all_cpu FROM all_cpus_avg WHERE date >? AND date <?"""
     
-    sqlQueryDateRangeMEMAvgTbl = """SELECT all_cpu FROM memory_percent WHERE date >? AND date <?"""
+    sqlQueryDateRangeMEMAvgTbl = """SELECT percent FROM memory_percent WHERE date >? AND date <?"""
 
     '''
     Connect to DB, set the cursor and create all tables.
@@ -219,10 +221,79 @@ class Database():
     @return a tuple with a range of averages given the time frame
     '''
     def queryDateRangeCPUAvgTable(self, date1, date2):
-        #TODO: add checks for parms or bad things will happen.
+        #TODO: add checks for parms or bad things will happen.        
         self.conn.row_factory = lambda cursor, row: row[0]
         self.setCursor()
         results = self.cursor.execute(self.sqlQueryDateRangeCPUAvgTbl, (date1, date2))
+        # so, a bit of a hack here... Since I changed the connection row factory I am
+        # not sure what it will do to me later - so - the sake of not to break anything
+        # I am saving the list, closing the connection, re-establishing a connection
+        # setting the cursor again and finally returning the list ... yep.
+        return_array = results.fetchall()
+        self.close()
+        self.connect()
+        self.setCursor()
+        return return_array
+    '''
+    Query CPU Table for an hour
+    '''    
+    def queryhourCPUAvgTable(self, time):
+        if time < 12:
+            date1 = str(datetime.date.today()) + " 0" + str(time) + ":00"
+        else:
+            date1 = str(datetime.date.today()) + " " + str(time) + ":00"
+
+        next_hour = time + 1
+        if next_hour == 24: # it's midnight
+            next_hour = 0
+            # break this up into multiple steps for readablility
+            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+            date2 = str(tomorrow) +  " 0" + str(next_hour) + ":00"
+        else:
+            if next_hour < 12:
+                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + ":00"
+            else:
+                date2 = str(datetime.date.today()) + " " + str(next_hour) + ":00"
+                        
+        #TODO: add checks for parms or bad things will happen.        
+        self.conn.row_factory = lambda cursor, row: row[0]
+        self.setCursor()
+        results = self.cursor.execute(self.sqlQueryDateRangeCPUAvgTbl, (date1, date2))
+        # so, a bit of a hack here... Since I changed the connection row factory I am
+        # not sure what it will do to me later - so - the sake of not to break anything
+        # I am saving the list, closing the connection, re-establishing a connection
+        # setting the cursor again and finally returning the list ... yep.
+        return_array = results.fetchall()
+        self.close()
+        self.connect()
+        self.setCursor()
+        return return_array
+    
+    '''
+    Query memory table for hour
+    '''
+    def queryhourMEMAvgTable(self, time):
+        if time < 12:
+            date1 = str(datetime.date.today()) + " 0" + str(time) + ":00"
+        else:
+            date1 = str(datetime.date.today()) + " " + str(time) + ":00"
+
+        next_hour = time + 1
+        if next_hour == 24: # it's midnight
+            next_hour = 0
+            # break this up into multiple steps for readablility
+            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+            date2 = str(tomorrow) +  " 0" + str(next_hour) + ":00"
+        else:
+            if next_hour < 12:
+                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + ":00"
+            else:
+                date2 = str(datetime.date.today()) + " " + str(next_hour) + ":00"
+                        
+        #TODO: add checks for parms or bad things will happen.        
+        self.conn.row_factory = lambda cursor, row: row[0]
+        self.setCursor()
+        results = self.cursor.execute(self.sqlQueryDateRangeMEMAvgTbl, (date1, date2))
         # so, a bit of a hack here... Since I changed the connection row factory I am
         # not sure what it will do to me later - so - the sake of not to break anything
         # I am saving the list, closing the connection, re-establishing a connection
@@ -262,4 +333,3 @@ class Database():
         self.cursor.close()
         # Offically closed for business. 
         self.conn.close()
-
