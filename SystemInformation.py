@@ -1,112 +1,78 @@
-from PyQt5 import QtGui, uic
-from PyQt5.QtWidgets import QApplication
-import sys
-import pyqtgraph as pg
+'''
+This class plots the live CPU percentage and memory percentage using pyqtgrapgh.
+'''
+from PyQt5.uic import loadUi
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QDialog
 import numpy as np
 from Cpu import Cpu
 from Memory import Memory
-
-global_bufferSize = 60 #seconds for x-axis
-global_numberOfIterations = 1  # update 1 samples per iteration
-global_data_cpu1 = None
-global_data_cpu2 = None
-global_data_cpu3 = None
-global_data_cpu4 = None
-global_curve_cpu1 = None
-global_curve_cpu2 = None
-global_curve_cpu3 = None
-global_curve_cpu4 = None
-global_line = None
-global_line_memory = None
-global_secondsElapsed = 0
-global_memory = None
-global_memory_curve = None
-
-def update():
-    global global_data_cpu1,global_data_cpu2,global_data_cpu3,global_data_cpu4, global_line, global_secondsElapsed
-    global curve_cpu1,curve_cpu2,curve_cpu3,curve_cpu4,global_memory,global_memory_curve,global_line_memory
-
-    c = Cpu()
-    cpuPercent = c.getPerCPUPercent()
-    m = Memory()
-    memoryPercent = m.getAverageSystemMemory()
-
-    #cpu1
-    global_data_cpu1[global_secondsElapsed:global_secondsElapsed + global_numberOfIterations] = cpuPercent[0]
-    global_curve_cpu1.setData(global_data_cpu1)
-    #cpu2
-    global_data_cpu2[global_secondsElapsed:global_secondsElapsed + global_numberOfIterations] = cpuPercent[1]
-    global_curve_cpu2.setData(global_data_cpu2)
-    #cpu3
-    global_data_cpu3[global_secondsElapsed:global_secondsElapsed + global_numberOfIterations] = cpuPercent[2]
-    global_curve_cpu3.setData(global_data_cpu3)
-    #cpu4
-    global_data_cpu4[global_secondsElapsed:global_secondsElapsed + global_numberOfIterations] = cpuPercent[3]
-    global_curve_cpu4.setData(global_data_cpu4)
-
-    global_memory[global_secondsElapsed:global_secondsElapsed + global_numberOfIterations] = memoryPercent
-    global_memory_curve.setData(global_memory)
-
-    global_secondsElapsed = (global_secondsElapsed + global_numberOfIterations) % global_bufferSize
-    global_line.setValue(global_secondsElapsed)
-    global_line_memory.setValue(global_secondsElapsed)
+from random import randint
 
 
-def prepareUI():
-    global global_data_cpu1,global_data_cpu2,global_data_cpu3,global_data_cpu4
-    global global_curve_cpu1, global_curve_cpu2, global_curve_cpu3, global_curve_cpu4
-    global global_line, global_memory,global_memory_curve,global_line_memory
-    app = QApplication(sys.argv)
-    __dialog__ = QtGui.QDialog()
-    __ui__ = uic.loadUi('gui/systeminformation.ui')
+class SystemInformation():
+    def __init__(self):
+        self.dialog = QDialog()
+        self.sysinfo = loadUi('gui/systeminformation.ui', baseinstance=self.dialog)
+        self.buffer_size = 60 # number of seconds
+        self.cpu = Cpu()
+        self.memory = Memory()
+        self.cpu_count = self.cpu.getCpuCount()
+        self.memory_data = np.zeros(self.buffer_size)
+        self.cpu_data = np.zeros((self.cpu_count,self.buffer_size))
+        self.seconds_elapsed = 0
+        self.number_of_iterations = 1
+        self.memory_line = None
+        self.cpu_line = None
+        self.cpu_plot = []
+        self.memory_plot = self.sysinfo.memoryView.plot(pen=(255,0,0))
 
-    pWidget = __ui__.cpuView
-    pMemoryWidget = __ui__.memoryView
+    def load_ui(self):
+        # Depending on the number of CPUs this loop will create the plots
+        for count in range(0,self.cpu_count):
+            self.cpu_plot.append(self.sysinfo.cpuView.plot(pen=(randint(0,255),randint(0,255),randint(0,255))))
 
-    #cpu1
-    global_data_cpu1 = np.zeros(global_bufferSize)
-    global_curve_cpu1 = pWidget.plot(pen=(255, 0, 0))
-    #cpu2
-    global_data_cpu2 = np.zeros(global_bufferSize)
-    global_curve_cpu2 = pWidget.plot(pen=(0, 255, 0))
-    #cpu3
-    global_data_cpu3 = np.zeros(global_bufferSize)
-    global_curve_cpu3 = pWidget.plot(pen=(0, 0, 255))
-    #cpu4
-    global_data_cpu4 = np.zeros(global_bufferSize)
-    global_curve_cpu4 = pWidget.plot(pen=(255, 140, 0))
+        # Memory and CPU line shows the current x-axis on the widget
+        self.memory_line = self.sysinfo.memoryView.addLine(x=0)
+        self.cpu_line = self.sysinfo.cpuView.addLine(x=0)
 
-    #memory view
-    global_memory = np.zeros(global_bufferSize)
-    global_memory_curve = pMemoryWidget.plot(pen=(255,0,0))
+        self.sysinfo.memoryView.setLabel('left','Percentage',units = '%')
+        self.sysinfo.memoryView.setLabel('bottom','Time',units = 's')
+        self.sysinfo.memoryView.setRange(xRange=[0, self.buffer_size], yRange=[0, 100])
+        self.sysinfo.memoryView.showGrid(x=True,y=True)
 
-    global_line = pWidget.addLine(x=0)
-    pWidget.setLabel('left','Percentage',units = '%')
-    pWidget.setLabel('bottom','Time',units = 's')
+        self.sysinfo.cpuView.setLabel('left','Percentage',units = '%')
+        self.sysinfo.cpuView.setLabel('bottom','Time',units = 's')
+        self.sysinfo.cpuView.setRange(xRange=[0, self.buffer_size], yRange=[0, 100])
+        self.sysinfo.cpuView.showGrid(x=True,y=True)
 
-    pWidget.setRange(xRange=[0, global_bufferSize], yRange=[0, 100])
-    pWidget.showGrid(x=True,y=True)
-    #pWidget.addLegend()
+    def load_data(self):
+        # Plot the memory line based on the memory reported.
+        self.memory_data[self.seconds_elapsed:self.seconds_elapsed + self.number_of_iterations] = \
+            self.memory.getAverageSystemMemory()
+        self.memory_plot.setData(self.memory_data)
 
-    global_line_memory = pMemoryWidget.addLine(x=0)
-    pMemoryWidget.setLabel('left','Percentage',units = '%')
-    pMemoryWidget.setLabel('bottom','Time',units = 's')
-    pMemoryWidget.setRange(xRange=[0, global_bufferSize], yRange=[0, 100])
-    pMemoryWidget.showGrid(x=True,y=True)
-    #pMemoryWidget.addLegend()
+        per_cpu_percent = self.cpu.getPerCPUPercent()
+        # Loop  to iterate through the number of CPUs in the machine and plot them on the widget
+        for cpu in range(0,self.cpu_count):
+            self.cpu_data[cpu][self.seconds_elapsed:self.seconds_elapsed + self.number_of_iterations] = \
+                per_cpu_percent[cpu]
+            self.cpu_plot[cpu].setData(self.cpu_data[cpu])
 
-    __ui__.show()
-    # refresh screen every 1000ms
-    timer = pg.QtCore.QTimer()
-    timer.timeout.connect(update)
+        # Increase the seconds based on the number of times update is requested
+        self.seconds_elapsed = (self.seconds_elapsed + self.number_of_iterations) % self.buffer_size
+        # Move the memory and cpu line on x-axis
+        self.memory_line.setValue(self.seconds_elapsed)
+        self.cpu_line.setValue(self.seconds_elapsed)
+
+
+def show():
+    si = SystemInformation()
+    si.load_ui()
+    si.load_data()
+    # refresh screen every 1 second
+    timer = QtCore.QTimer()
+    timer.timeout.connect(si.load_data)
     timer.start(1000)
-
-    # todo: Syntax error on purpose, have to fix this code otherwise dialog
-    #  box would not showup. _exec cannot execute here and widget cannot
-    # todo: be constructed before the main window
-    pg.QtGui.QApplication.instan().exec_()
-    sys.exit()
-
-
-
+    si.dialog.exec_()
 
