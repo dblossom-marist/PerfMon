@@ -280,7 +280,7 @@ class Database():
     '''
     Query memory table for hour
     '''
-    def queryhourMEMAvgTable(self, hour, minute):
+    def queryhourMEMAvgTable(self, hour, minute=0):
         minute_string = ""
         if minute < 0 or minute > 59:
             minute_string = ":00" # just make it top of hour
