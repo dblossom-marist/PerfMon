@@ -9,7 +9,7 @@ class Database():
     
     # Name & Location of the database file
     dbName = "MetricCollector.db"
-    dbLocation = "/usr/share/perfmon/"
+    dbLocation = ""#/usr/share/perfmon/"
     
     # The SQL command to create a process table
     sqlCreateProcTbl = """CREATE TABLE if not exists processes
@@ -56,6 +56,11 @@ class Database():
 
     # The SQL statement to query the database
     sqlQueryProcessTbl = """SELECT * FROM processes WHERE pid=?"""
+    
+    # The SQL statement to return overall CPU avgs between two datea
+    sqlQueryDateRangeCPUAvgTbl = """SELECT all_cpu FROM all_cpus_avg WHERE date >? AND date <?"""
+    
+    sqlQueryDateRangeMEMAvgTbl = """SELECT all_cpu FROM memory_percent WHERE date >? AND date <?"""
 
     '''
     Connect to DB, set the cursor and create all tables.
@@ -205,6 +210,47 @@ class Database():
     '''
     def queryMemTable(self):
         return self.cursor.execute("SELECT * FROM memory_percent")
+    
+    '''
+    Query the CPU table for overall averages given a date range
+    Note: '>' and '<' is used so results might not be as expected
+    @param date1: The first date in the range
+    @param date2: The second date in the range
+    @return a tuple with a range of averages given the time frame
+    '''
+    def queryDateRangeCPUAvgTable(self, date1, date2):
+        #TODO: add checks for parms or bad things will happen.
+        self.conn.row_factory = lambda cursor, row: row[0]
+        self.setCursor()
+        results = self.cursor.execute(self.sqlQueryDateRangeCPUAvgTbl, (date1, date2))
+        # so, a bit of a hack here... Since I changed the connection row factory I am
+        # not sure what it will do to me later - so - the sake of not to break anything
+        # I am saving the list, closing the connection, re-establishing a connection
+        # setting the cursor again and finally returning the list ... yep.
+        return_array = results.fetchall()
+        self.close()
+        self.connect()
+        self.setCursor()
+        return return_array
+    
+    '''
+    
+    '''
+    def queryDateRangeMEMAvgTable(self, date1, date2):
+        #TODO: add checks for parms or bad things will happen.
+        self.conn.row_factory = lambda cursor, row: row[0]
+        self.setCursor()
+        results = self.cursor.execute(self.sqlQueryDateRangeMEMAvgTbl, (date1, date2))
+        # so, a bit of a hack here... Since I changed the connection row factory I am
+        # not sure what it will do to me later - so - the sake of not to break anything
+        # I am saving the list, closing the connection, re-establishing a connection
+        # setting the cursor again and finally returning the list ... yep.
+        return_array = results.fetchall()
+        self.close()
+        self.connect()
+        self.setCursor()
+        return return_array
+
         
     '''
     Some closing clean up ..
@@ -216,3 +262,4 @@ class Database():
         self.cursor.close()
         # Offically closed for business. 
         self.conn.close()
+
