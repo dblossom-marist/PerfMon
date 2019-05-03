@@ -1,5 +1,5 @@
 '''
-This class plots the live CPU percentage and memory percentage using pyqtgrapgh.
+This class plots the db CPU percentage and memory percentage using pyqtgrapgh.
 '''
 from PyQt5.uic import loadUi
 from PyQt5 import QtCore
@@ -7,32 +7,29 @@ from PyQt5.QtWidgets import QDialog
 import numpy as np
 from Cpu import Cpu
 from Memory import Memory
-from random import randint
-import SystemInformationArchive
+from Database import Database
 
 
-class SystemInformation():
+class SystemInformationArchive():
     def __init__(self):
         self.dialog = QDialog()
-        self.sysinfo = loadUi('gui/systeminformation.ui', baseinstance=self.dialog)
+        self.sysinfo = loadUi('gui/systeminformationarchive.ui', baseinstance=self.dialog)
         self.buffer_size = 60 # number of seconds
         self.cpu = Cpu()
         self.memory = Memory()
         self.cpu_count = self.cpu.getCpuCount()
         self.memory_data = np.zeros(self.buffer_size)
-        self.cpu_data = np.zeros((self.cpu_count,self.buffer_size))
+        self.cpu_data = np.zeros(self.buffer_size)
         self.seconds_elapsed = 0
         self.number_of_iterations = 1
         self.memory_line = None
         self.cpu_line = None
-        self.cpu_plot = []
+        self.cpu_plot = None
         self.memory_plot = self.sysinfo.memoryView.plot(pen=(255,0,0))
+        self.cpu_plot = self.sysinfo.cpuView.plot(pen=(255,0,0))
+        self.db = Database()
 
     def load_ui(self):
-        # Depending on the number of CPUs this loop will create the plots
-        for count in range(0,self.cpu_count):
-            self.cpu_plot.append(self.sysinfo.cpuView.plot(pen=(randint(0,255),randint(0,255),randint(0,255))))
-
         # Memory and CPU line shows the current x-axis on the widget
         self.memory_line = self.sysinfo.memoryView.addLine(x=0)
         self.cpu_line = self.sysinfo.cpuView.addLine(x=0)
@@ -49,30 +46,17 @@ class SystemInformation():
 
     def load_data(self):
         # Plot the memory line based on the memory reported.
-        self.memory_data[self.seconds_elapsed:self.seconds_elapsed + self.number_of_iterations] = \
-            self.memory.getAverageSystemMemory()
         self.memory_plot.setData(self.memory_data)
-
-        per_cpu_percent = self.cpu.getPerCPUPercent()
-        # Loop  to iterate through the number of CPUs in the machine and plot them on the widget
-        for cpu in range(0,self.cpu_count):
-            self.cpu_data[cpu][self.seconds_elapsed:self.seconds_elapsed + self.number_of_iterations] = \
-                per_cpu_percent[cpu]
-            self.cpu_plot[cpu].setData(self.cpu_data[cpu])
-
-        # Increase the seconds based on the number of times update is requested
-        self.seconds_elapsed = (self.seconds_elapsed + self.number_of_iterations) % self.buffer_size
-        # Move the memory and cpu line on x-axis
-        self.memory_line.setValue(self.seconds_elapsed)
-        self.cpu_line.setValue(self.seconds_elapsed)
+        self.cpu_data = self.db.queryhourCPUAvgTable(self.sysinfo.timeEdit.time().hour(),self.sysinfo.timeEdit.time().minute())
+        self.memory_data = self.db.queryhourMEMAvgTable(self.sysinfo.timeEdit.time().hour(),self.sysinfo.timeEdit.time().minute())
+        self.memory_plot.setData(self.memory_data)
+        self.cpu_plot.setData(self.cpu_data)
 
 
 def show():
-    si = SystemInformation()
+    si = SystemInformationArchive()
     si.load_ui()
     si.load_data()
-    # Access database for archives
-    si.sysinfo.archiveButton.clicked.connect(SystemInformationArchive.show)
     # refresh screen every 1 second
     timer = QtCore.QTimer()
     timer.timeout.connect(si.load_data)

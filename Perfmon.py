@@ -48,7 +48,6 @@ if __name__ == '__main__':
     p = Perfmon()
     p.load_ui()
     p.load_data()
-
     # Refresh screen every 3 seconds
     timer.timeout.connect(p.load_data)
     timer.start(3000)
