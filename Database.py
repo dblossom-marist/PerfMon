@@ -350,7 +350,3 @@ class Database():
         # Offically closed for business. 
         self.conn.close()
         
-        
-d = Database()
-print(d.queryhourCPUAvgTable(16, 32))
-print(d.queryhourMEMAvgTable(7, 32))
