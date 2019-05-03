@@ -246,7 +246,7 @@ class Database():
         else:
             minute_string = ":" + str(minute)
         
-        if hour < 12:
+        if hour < 10:
             date1 = str(datetime.date.today()) + " 0" + str(hour) + minute_string
         else:
             date1 = str(datetime.date.today()) + " " + str(hour) + minute_string
@@ -301,7 +301,7 @@ class Database():
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
             date2 = str(tomorrow) +  " 0" + str(next_hour) + minute_string
         else:
-            if next_hour < 12:
+            if next_hour < 10:
                 date2 = str(datetime.date.today()) + " 0" + str(next_hour) + minute_string
             else:
                 date2 = str(datetime.date.today()) + " " + str(next_hour) + minute_string
