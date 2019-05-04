@@ -9,6 +9,7 @@ from Cpu import Cpu
 from Memory import Memory
 from random import randint
 import SystemInformationArchive
+from Pmutils import Pmutils
 
 
 class SystemInformation():
@@ -65,6 +66,18 @@ class SystemInformation():
         # Move the memory and cpu line on x-axis
         self.memory_line.setValue(self.seconds_elapsed)
         self.cpu_line.setValue(self.seconds_elapsed)
+
+        # get virtual memory statistics
+        memory_statistics = self.memory.getSystemMemory()
+        self.sysinfo.totalMemory.setText(str(Pmutils.convertBytes(memory_statistics[0])))
+        self.sysinfo.availableMemory.setText(str(Pmutils.convertBytes(memory_statistics[1])))
+        self.sysinfo.usedMemory.setText(str(Pmutils.convertBytes(memory_statistics[3])))
+
+        # get swap memory statistics
+        swap_memory_statistics = self.memory.getSwapMemory()
+        self.sysinfo.totalSwap.setText(str(Pmutils.convertBytes(swap_memory_statistics[0])))
+        self.sysinfo.usedSwap.setText(str(Pmutils.convertBytes(swap_memory_statistics[1])))
+        self.sysinfo.availableSwap.setText(str(Pmutils.convertBytes(swap_memory_statistics[2])))
 
 
 def show():

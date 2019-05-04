@@ -15,6 +15,7 @@ timer = QtCore.QTimer()
 class Perfmon():
     def __init__(self):
         self.mainScreen = loadUi('gui/mainwindow.ui')
+        self.mainScreen.showMaximized()
         # Column names in TreeWidget
         self.treeWidgetColumnsInMainScreen = ["Process","User","% CPU","PID","Memory","DiskRead","DiskWrite","State"]
 

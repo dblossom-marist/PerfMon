@@ -37,4 +37,17 @@ class Memory:
     def updateDatabase(self):
         db = Database()
         db.updateAverageMemoryTable(self.getAverageSystemMemory(), Pmutils.createTimeStamp())
-        
+
+    '''A method that returns all the memory stats
+    @return : memory statisctis
+    '''
+    def getSystemMemory(self):
+        mem_stats = psutil.virtual_memory();
+        return mem_stats
+
+    '''A method that returns all the swap memory stats
+    @return : swap memory statisctis
+    '''
+    def getSwapMemory(self):
+        swap_mem_stats = psutil.swap_memory();
+        return swap_mem_stats
