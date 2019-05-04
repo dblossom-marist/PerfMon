@@ -237,32 +237,16 @@ class Database():
     Query CPU Table for an hour
     '''    
     def queryhourCPUAvgTable(self, hour, minute=0):
-        # quick and dirty minute string .... 
-        minute_string = ""
-        if minute < 0 or minute > 59:
-            minute_string = ":00" # just make it top of hour
-        if minute < 10:
-            minute_string = ":0" + str(minute)
-        else:
-            minute_string = ":" + str(minute)
         
-        if hour < 10:
-            date1 = str(datetime.date.today()) + " 0" + str(hour) + minute_string
-        else:
-            date1 = str(datetime.date.today()) + " " + str(hour) + minute_string
-
-        next_hour = hour + 1
-        if next_hour == 24: # it's midnight
-            next_hour = 0
-            # break this up into multiple steps for readablility
-            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            date2 = str(tomorrow) +  " 0" + str(next_hour) + minute_string
-        else:
-            if next_hour < 10:
-                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + minute_string
-            else:
-                date2 = str(datetime.date.today()) + " " + str(next_hour) + minute_string
-                        
+        date1 = self.buildDayString(hour)
+        date2 = self.todayCheck(hour)
+        minute_string = self.buildMinuteString(minute)
+        hour_string = self.buildHourString(hour)
+        next_hour = self.buildHourString(hour+1)
+        
+        date1 = str(date1) + " " + hour_string + ":" + minute_string
+        date2 = str(date2) + " " + next_hour + ":" + minute_string
+                      
         #TODO: add checks for parms or bad things will happen.        
         self.conn.row_factory = lambda cursor, row: row[0]
         self.setCursor()
@@ -276,35 +260,19 @@ class Database():
         self.connect()
         self.setCursor()
         return return_array
-    
     '''
     Query memory table for hour
     '''
     def queryhourMEMAvgTable(self, hour, minute=0):
-        minute_string = ""
-        if minute < 0 or minute > 59:
-            minute_string = ":00" # just make it top of hour
-        if minute < 10:
-            minute_string = ":0" + str(minute)
-        else:
-            minute_string = ":" + str(minute)
         
-        if hour < 10:
-            date1 = str(datetime.date.today()) + " 0" + str(hour) + minute_string
-        else:
-            date1 = str(datetime.date.today()) + " " + str(hour) + minute_string
-
-        next_hour = hour + 1
-        if next_hour == 24: # it's midnight
-            next_hour = 0
-            # break this up into multiple steps for readablility
-            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-            date2 = str(tomorrow) +  " 0" + str(next_hour) + minute_string
-        else:
-            if next_hour < 10:
-                date2 = str(datetime.date.today()) + " 0" + str(next_hour) + minute_string
-            else:
-                date2 = str(datetime.date.today()) + " " + str(next_hour) + minute_string
+        date1 = self.buildDayString(hour)
+        date2 = self.todayCheck(hour)
+        minute_string = self.buildMinuteString(minute)
+        hour_string = self.buildHourString(hour)
+        next_hour = self.buildHourString(hour+1)
+        
+        date1 = str(date1) + " " + hour_string + ":" + minute_string
+        date2 = str(date2) + " " + next_hour + ":" + minute_string
                         
         #TODO: add checks for parms or bad things will happen.        
         self.conn.row_factory = lambda cursor, row: row[0]
@@ -321,7 +289,8 @@ class Database():
         return return_array
     
     '''
-    
+    A method that queries two dates in the DB and returns avg memory
+    @return an array of the results.
     '''
     def queryDateRangeMEMAvgTable(self, date1, date2):
         #TODO: add checks for parms or bad things will happen.
@@ -349,4 +318,51 @@ class Database():
         self.cursor.close()
         # Offically closed for business. 
         self.conn.close()
+    
+    '''
+    A helper method to build a string minute for DB queries.
+    @return a formated minute
+    '''
+    def buildMinuteString(self, minute):
+        # Just make sure you gave me a valid minute,
+        # if not, I'll play nice and default to 00
+        # I should just kick you out, esp if it's a typo.
+        if minute < 0 or minute > 59:
+            return "00"
+        else:
+            return "{:02d}".format(minute)
+    
+    '''
+    A helper method to build a string hour for DB query
+    @return: a formated hour
+    '''
+    def buildHourString(self,hour):
+        # I know, a method that just returns something
+        # How O_O cliche, but it looks cleaner than the formatting string
+        if hour >= 24:
+            return "00"
+        else:
+            return "{:02d}".format(hour)
+    
+    '''
+    A helper method to give me a string of a date ... 
+    @return it's complicated, don't even call this ...
+    '''
+    def buildDayString(self, hour):
+        currentHour = datetime.datetime.now().hour
+        if(currentHour < hour):
+            return str(datetime.date.today() - datetime.timedelta(days=1))
+        else:
+            return str(datetime.date.today())
+    
+    '''
+    A helper method to check if an hour will roll over
+    to the next day or not.
+    @return a formated date of current date or tomorrow
+    '''
+    def todayCheck(self, hour):
+        if hour + 1 >= 24: # it's midnight - or more - weird. 
+            return str(datetime.date.today())
+        else:
+            return self.buildDayString(hour)
         
