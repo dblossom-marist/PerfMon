@@ -34,13 +34,13 @@ class SystemInformationArchive():
         self.memory_line = self.sysinfo.memoryView.addLine(x=0)
         self.cpu_line = self.sysinfo.cpuView.addLine(x=0)
 
-        self.sysinfo.memoryView.setLabel('left','Percentage',units = '%')
-        self.sysinfo.memoryView.setLabel('bottom','Time',units = 's')
+        self.sysinfo.memoryView.setLabel('left','Memory',units = '%')
+        self.sysinfo.memoryView.setLabel('bottom','Time',units = 'minutes')
         self.sysinfo.memoryView.setRange(xRange=[0, self.buffer_size], yRange=[0, 100])
         self.sysinfo.memoryView.showGrid(x=True,y=True)
 
-        self.sysinfo.cpuView.setLabel('left','Percentage',units = '%')
-        self.sysinfo.cpuView.setLabel('bottom','Time',units = 's')
+        self.sysinfo.cpuView.setLabel('left','CPU',units = '%')
+        self.sysinfo.cpuView.setLabel('bottom','Time',units = 'minutes')
         self.sysinfo.cpuView.setRange(xRange=[0, self.buffer_size], yRange=[0, 100])
         self.sysinfo.cpuView.showGrid(x=True,y=True)
 
