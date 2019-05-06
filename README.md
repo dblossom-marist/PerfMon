@@ -22,7 +22,7 @@ You can see a graph depicting the system's current performance by selecting View
 
 You can click the button labled "Archives" to see a graph representing the history of the system's performance over the past 24 hours, as logged in the metrics collection database:
 
-![PerfMon System Information Archive window](img/SystemInformation.png)
+![PerfMon System Information Archive window](img/SystemInformationArchive.png)
 
 You can change the hour displayed using either the arrow keys or the arrow buttons on the right-hand side of the hour field above the graphs.
 
