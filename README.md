@@ -12,7 +12,7 @@ This brings up the main window:
 
 ![PerfMon main window](img/PerfMon.png)
 
-You can rearrange and resize the columns by dragging them and their borders, respectively. By default, the window only displays processes started by the user that invoked PerfMon (which is root, due to PerfMon.py needing to be started by root). You can have it show processes belonging to any user by clicking the checkbox labeled "Show processes of all users" located below the table:
+You can rearrange and resize the columns by dragging them and their borders, respectively. By default, the window only displays processes started by root. You can have it show processes belonging to any user by clicking the checkbox labeled "Show processes of all users" located below the table:
 
 ![PerfMon displaying processes of all users](img/PerfMonAllUsers.png)
 
